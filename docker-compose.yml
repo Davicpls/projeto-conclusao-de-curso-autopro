@@ -1,12 +1,37 @@
 services:
+  db:
+    image: postgres:16
+    container_name: pcc_db
+    environment:
+      POSTGRES_DB: PCC_AUTO
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d PCC_AUTO"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   backend:
     build: ./backend
     container_name: pcc_backend
     ports:
       - "3001:3001"
+    env_file:
+      - ./backend/.env
+    environment:
+      DB_HOST: db
+      CHOKIDAR_USEPOLLING: true
     volumes:
       - ./backend:/app
       - /app/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
     command: npm run dev
 
   frontend:
@@ -14,9 +39,16 @@ services:
     container_name: pcc_frontend
     ports:
       - "5173:5173"
+    environment:
+      CHOKIDAR_USEPOLLING: true
+      WATCHPACK_POLLING: true
+      VITE_API_URL: http://localhost:3001
     volumes:
       - ./frontend:/app
       - /app/node_modules
     depends_on:
       - backend
-    command: npm run dev -- --host
+    command: pnpm dev --host 0.0.0.0
+
+volumes:
+  postgres_data:

@@ -314,6 +314,18 @@ Backend:
 http://localhost:3001
 ```
 
+Swagger:
+
+```text
+http://localhost:3001/api-docs
+```
+
+Arquivo OpenAPI em JSON:
+
+```text
+http://localhost:3001/swagger.json
+```
+
 ---
 
 # Parar containers

@@ -1,0 +1,1009 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "AutoPro API",
+    "description": "Documentacao das rotas da API AutoPro baseada na modelagem Cliente, Veiculo, Servico, Item de Servico e Produto.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3001",
+      "description": "Servidor local"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Clientes",
+      "description": "Operacoes relacionadas aos clientes"
+    },
+    {
+      "name": "Veiculos",
+      "description": "Operacoes relacionadas aos veiculos"
+    },
+    {
+      "name": "Servicos",
+      "description": "Operacoes relacionadas aos servicos"
+    },
+    {
+      "name": "Itens de Servico",
+      "description": "Operacoes relacionadas aos produtos utilizados em servicos"
+    },
+    {
+      "name": "Produtos",
+      "description": "Operacoes relacionadas ao estoque de produtos"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Verifica se a API esta rodando",
+        "tags": ["Status"],
+        "responses": {
+          "200": {
+            "description": "API em execucao",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiMessage"
+                },
+                "example": {
+                  "message": "API AutoPro rodando"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clientes": {
+      "get": {
+        "summary": "Lista todos os clientes",
+        "tags": ["Clientes"],
+        "responses": {
+          "200": {
+            "description": "Lista de clientes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Cliente"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cria um cliente",
+        "tags": ["Clientes"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClienteInput"
+              },
+              "example": {
+                "nome": "Maria Silva",
+                "email": "maria@email.com",
+                "telefone": "(11) 99999-9999"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Cliente criado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cliente"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/clientes/{id}": {
+      "get": {
+        "summary": "Busca um cliente por ID",
+        "tags": ["Clientes"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cliente encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cliente"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "put": {
+        "summary": "Atualiza um cliente",
+        "tags": ["Clientes"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClienteInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cliente atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cliente"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove um cliente",
+        "tags": ["Clientes"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Cliente removido"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        }
+      }
+    },
+    "/veiculos": {
+      "get": {
+        "summary": "Lista todos os veiculos",
+        "tags": ["Veiculos"],
+        "responses": {
+          "200": {
+            "description": "Lista de veiculos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Veiculo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cria um veiculo",
+        "tags": ["Veiculos"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VeiculoInput"
+              },
+              "example": {
+                "placa": "ABC1D23",
+                "marca": "Toyota",
+                "modelo": "Corolla",
+                "ano": 2020,
+                "id_cliente": 1
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Veiculo criado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Veiculo"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/veiculos/{id}": {
+      "get": {
+        "summary": "Busca um veiculo por ID",
+        "tags": ["Veiculos"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Veiculo encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Veiculo"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "put": {
+        "summary": "Atualiza um veiculo",
+        "tags": ["Veiculos"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VeiculoInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Veiculo atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Veiculo"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove um veiculo",
+        "tags": ["Veiculos"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Veiculo removido"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        }
+      }
+    },
+    "/servicos": {
+      "get": {
+        "summary": "Lista todos os servicos",
+        "tags": ["Servicos"],
+        "responses": {
+          "200": {
+            "description": "Lista de servicos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Servico"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cria um servico",
+        "tags": ["Servicos"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServicoInput"
+              },
+              "example": {
+                "descricao": "Troca de oleo",
+                "status": "em andamento",
+                "data_inicio": "2026-05-01",
+                "data_fim": null,
+                "valor_total": 250,
+                "id_veiculo": 1
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Servico criado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Servico"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/servicos/{id}": {
+      "get": {
+        "summary": "Busca um servico por ID",
+        "tags": ["Servicos"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Servico encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Servico"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "put": {
+        "summary": "Atualiza um servico",
+        "tags": ["Servicos"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServicoInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Servico atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Servico"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove um servico",
+        "tags": ["Servicos"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Servico removido"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        }
+      }
+    },
+    "/itens-servico": {
+      "get": {
+        "summary": "Lista todos os itens de servico",
+        "tags": ["Itens de Servico"],
+        "responses": {
+          "200": {
+            "description": "Lista de itens de servico",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ItemServico"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cria um item de servico",
+        "tags": ["Itens de Servico"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ItemServicoInput"
+              },
+              "example": {
+                "id_servico": 1,
+                "id_produto": 1,
+                "quantidade_utilizada": 2
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Item de servico criado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ItemServico"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        }
+      }
+    },
+    "/itens-servico/{id}": {
+      "get": {
+        "summary": "Busca um item de servico por ID",
+        "tags": ["Itens de Servico"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item de servico encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ItemServico"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "put": {
+        "summary": "Atualiza um item de servico",
+        "tags": ["Itens de Servico"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ItemServicoInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Item de servico atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ItemServico"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove um item de servico",
+        "tags": ["Itens de Servico"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Item de servico removido"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/produtos": {
+      "get": {
+        "summary": "Lista todos os produtos",
+        "tags": ["Produtos"],
+        "responses": {
+          "200": {
+            "description": "Lista de produtos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Produto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cria um produto",
+        "tags": ["Produtos"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProdutoInput"
+              },
+              "example": {
+                "nome": "Oleo 5W30",
+                "quantidade": 12,
+                "preco_unitario": 65.5
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Produto criado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Produto"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/produtos/{id}": {
+      "get": {
+        "summary": "Busca um produto por ID",
+        "tags": ["Produtos"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Produto encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Produto"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "put": {
+        "summary": "Atualiza um produto",
+        "tags": ["Produtos"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProdutoInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Produto atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Produto"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove um produto",
+        "tags": ["Produtos"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Produto removido"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "Id": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "ID do registro",
+        "schema": {
+          "type": "integer",
+          "example": 1
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Dados invalidos ou obrigatorios ausentes",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiMessage"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Registro nao encontrado",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiMessage"
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "Operacao bloqueada por relacionamento ou regra de negocio",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiMessage"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ApiMessage": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Mensagem da API"
+          }
+        }
+      },
+      "Cliente": {
+        "allOf": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "example": 1
+              }
+            }
+          },
+          {
+            "$ref": "#/components/schemas/ClienteInput"
+          }
+        ]
+      },
+      "ClienteInput": {
+        "type": "object",
+        "required": ["nome", "email", "telefone"],
+        "properties": {
+          "nome": {
+            "type": "string",
+            "example": "Maria Silva"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "maria@email.com"
+          },
+          "telefone": {
+            "type": "string",
+            "example": "(11) 99999-9999"
+          }
+        }
+      },
+      "Veiculo": {
+        "allOf": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "example": 1
+              }
+            }
+          },
+          {
+            "$ref": "#/components/schemas/VeiculoInput"
+          }
+        ]
+      },
+      "VeiculoInput": {
+        "type": "object",
+        "required": ["placa", "marca", "modelo", "ano", "id_cliente"],
+        "properties": {
+          "placa": {
+            "type": "string",
+            "example": "ABC1D23"
+          },
+          "marca": {
+            "type": "string",
+            "example": "Toyota"
+          },
+          "modelo": {
+            "type": "string",
+            "example": "Corolla"
+          },
+          "ano": {
+            "type": "integer",
+            "example": 2020
+          },
+          "id_cliente": {
+            "type": "integer",
+            "example": 1
+          }
+        }
+      },
+      "Servico": {
+        "allOf": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "example": 1
+              }
+            }
+          },
+          {
+            "$ref": "#/components/schemas/ServicoInput"
+          }
+        ]
+      },
+      "ServicoInput": {
+        "type": "object",
+        "required": [
+          "descricao",
+          "status",
+          "data_inicio",
+          "valor_total",
+          "id_veiculo"
+        ],
+        "properties": {
+          "descricao": {
+            "type": "string",
+            "example": "Troca de oleo"
+          },
+          "status": {
+            "type": "string",
+            "example": "em andamento"
+          },
+          "data_inicio": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-05-01"
+          },
+          "data_fim": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "example": "2026-05-02"
+          },
+          "valor_total": {
+            "type": "number",
+            "format": "float",
+            "example": 250
+          },
+          "id_veiculo": {
+            "type": "integer",
+            "example": 1
+          }
+        }
+      },
+      "ItemServico": {
+        "allOf": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "example": 1
+              }
+            }
+          },
+          {
+            "$ref": "#/components/schemas/ItemServicoInput"
+          }
+        ]
+      },
+      "ItemServicoInput": {
+        "type": "object",
+        "required": ["id_servico", "id_produto", "quantidade_utilizada"],
+        "properties": {
+          "id_servico": {
+            "type": "integer",
+            "example": 1
+          },
+          "id_produto": {
+            "type": "integer",
+            "example": 1
+          },
+          "quantidade_utilizada": {
+            "type": "number",
+            "format": "float",
+            "example": 2
+          }
+        }
+      },
+      "Produto": {
+        "allOf": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "example": 1
+              }
+            }
+          },
+          {
+            "$ref": "#/components/schemas/ProdutoInput"
+          }
+        ]
+      },
+      "ProdutoInput": {
+        "type": "object",
+        "required": ["nome", "quantidade", "preco_unitario"],
+        "properties": {
+          "nome": {
+            "type": "string",
+            "example": "Oleo 5W30"
+          },
+          "quantidade": {
+            "type": "number",
+            "format": "float",
+            "example": 12
+          },
+          "preco_unitario": {
+            "type": "number",
+            "format": "float",
+            "example": 65.5
+          }
+        }
+      }
+    }
+  }
+}
