@@ -65,7 +65,7 @@ export default function Veiculos() {
       setVeiculos((prevVeiculos) => [...prevVeiculos, veiculoCriado]);
 
       setIsDialogOpen(false);
-      toast.success('Veículo adicionado com sucesso');
+      toast.success('Veículo cadastrado com sucesso');
     } catch (error: any) {
       const message = error.response?.data?.message || 'Erro ao cadastrar usuário';
       toast.error(message)

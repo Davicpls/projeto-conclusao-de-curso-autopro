@@ -15,6 +15,17 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface EditarPessoaFormProps {
   id: string;
@@ -287,9 +298,32 @@ export default function EditarPessoaForm({
           <Button type="button" variant="outline" onClick={onCancel} disabled={loading}>
             Cancelar
           </Button>
-          <Button type="button" variant="destructive" onClick={handleDelete} disabled={loading}>
-            Excluir Pessoa
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button type="button" variant="destructive" disabled={loading}>
+                Excluir Pessoa
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Excluir pessoa?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Essa ação não pode ser desfeita. A pessoa {formData.nomeCompleto} será removida
+                  permanentemente do sistema.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={loading}>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDelete}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  disabled={loading}
+                >
+                  Confirmar exclusão
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           <Button type="submit" disabled={loading}>
             Salvar Alterações
           </Button>

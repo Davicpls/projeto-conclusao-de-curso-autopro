@@ -1,4 +1,18 @@
 import { useState } from 'react';
+import { toast } from 'sonner';
+import Breadcrumbs from '@/components/Breadcrumbs';
+import { VeiculoApi, veiculosApi, ClienteApi } from '@/api';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,9 +24,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { toast } from 'sonner';
-import Breadcrumbs from '@/components/Breadcrumbs';
-import { VeiculoApi, veiculosApi, ClienteApi } from '@/api';
 
 interface EditarVeiculoProps {
   id: string;
@@ -23,10 +34,16 @@ interface EditarVeiculoProps {
   onCancel: () => void;
 }
 
-export default function EditarVeiculoForm({ id, veiculo, clientes, onNavigate, onSave, onCancel }: EditarVeiculoProps) {
+export default function EditarVeiculoForm({
+  id,
+  veiculo,
+  clientes,
+  onNavigate,
+  onSave,
+  onCancel,
+}: EditarVeiculoProps) {
   const [formData, setFormData] = useState<VeiculoApi>(veiculo);
   const [loading, setLoading] = useState(false);
-
 
   const handleInputChange = (field: string, value: any) => {
     setFormData({
@@ -40,45 +57,40 @@ export default function EditarVeiculoForm({ id, veiculo, clientes, onNavigate, o
 
     try {
       setLoading(true);
-
       await onSave(formData);
+      toast.success('Veículo atualizado com sucesso!');
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Erro ao cadastrar usuário';
-      toast.error(message)
+      const message = error.response?.data?.message || 'Erro ao atualizar veículo';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleDelete = async () => {
     try {
       setLoading(true);
-
       await veiculosApi.remove(id);
+      toast.success('Veículo deletado com sucesso!');
       onNavigate('/veiculos');
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Erro ao cadastrar usuário';
-      toast.error(message)
+      const message = error.response?.data?.message || 'Erro ao deletar veículo';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
-      {/* Breadcrumbs */}
       <Breadcrumbs items={[{ label: 'Dashboard' }, { label: 'Veículos' }, { label: 'Editar' }]} />
 
-      {/* Header */}
       <div>
         <h1>Editar Veículo</h1>
         <p className="text-muted-foreground mt-1">ID: {formData.id}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Informações Básicas */}
         <Card className="p-6">
           <h3 className="font-semibold mb-4">Informações Básicas</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -119,8 +131,8 @@ export default function EditarVeiculoForm({ id, veiculo, clientes, onNavigate, o
                 required
               />
             </div>
-            <div >
-            <Label htmlFor="id_cliente">Cliente</Label>
+            <div>
+              <Label htmlFor="id_cliente">Cliente</Label>
               <Select
                 value={formData.id_cliente ? String(formData.id_cliente) : ''}
                 onValueChange={(value) => handleInputChange('id_cliente', Number(value))}
@@ -128,7 +140,6 @@ export default function EditarVeiculoForm({ id, veiculo, clientes, onNavigate, o
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Selecione um cliente..." />
                 </SelectTrigger>
-
                 <SelectContent>
                   {clientes.map((cliente) => (
                     <SelectItem key={cliente.id} value={String(cliente.id)}>
@@ -137,7 +148,7 @@ export default function EditarVeiculoForm({ id, veiculo, clientes, onNavigate, o
                   ))}
                 </SelectContent>
               </Select>
-          </div>
+            </div>
             <div>
               <Label htmlFor="quilometragem">Quilometragem</Label>
               <Input
@@ -174,7 +185,6 @@ export default function EditarVeiculoForm({ id, veiculo, clientes, onNavigate, o
           </div>
         </Card>
 
-        {/* Informações Técnicas */}
         <Card className="p-6">
           <h3 className="font-semibold mb-4">Informações Técnicas</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -214,15 +224,39 @@ export default function EditarVeiculoForm({ id, veiculo, clientes, onNavigate, o
           </div>
         </Card>
 
-        {/* Buttons */}
         <div className="flex gap-3 justify-end pt-4 border-t border-border">
-          <Button type="button" variant="outline" onClick={onCancel}>
+          <Button type="button" variant="outline" onClick={onCancel} disabled={loading}>
             Cancelar
           </Button>
-          <Button type="button" variant="destructive" onClick={handleDelete}>
-            Excluir veículo
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button type="button" variant="destructive" disabled={loading}>
+                Excluir veículo
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Excluir veículo?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Essa ação não pode ser desfeita. O veículo {formData.placa} será removido
+                  permanentemente do sistema.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={loading}>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDelete}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  disabled={loading}
+                >
+                  Confirmar exclusão
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          <Button type="submit" disabled={loading}>
+            Salvar Alterações
           </Button>
-          <Button type="submit">Salvar Alterações</Button>
         </div>
       </form>
     </div>
