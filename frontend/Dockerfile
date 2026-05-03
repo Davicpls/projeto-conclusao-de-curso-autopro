@@ -1,13 +1,15 @@
-FROM node:25.9.0
+FROM node:24.15.0
 
 WORKDIR /app
 
-COPY package*.json ./
+RUN corepack enable
 
-RUN npm install
+COPY package.json pnpm-lock.yaml ./
+
+RUN pnpm install
 
 COPY . .
 
 EXPOSE 5173
 
-CMD ["npm", "run", "dev", "--", "--host"]
+CMD ["pnpm", "dev"]

@@ -48,7 +48,7 @@ services:
       - /app/node_modules
     depends_on:
       - backend
-    command: pnpm dev --host 0.0.0.0
+    command: sh -c "pnpm install && pnpm dev"
 
 volumes:
   postgres_data:

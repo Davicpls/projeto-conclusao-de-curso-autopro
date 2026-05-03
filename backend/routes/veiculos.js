@@ -46,14 +46,26 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const { placa, marca, modelo, ano, id_cliente } = req.body;
+    const {
+      placa,
+      modelo,
+      ano,
+      cor,
+      quilometragem,
+      tipoVeiculo,
+      motorizacao,
+      numeroChasse,
+      tipoCombustivel,
+      dataUltimaRevisao,
+      id_cliente
+    } = req.body;
 
     const anoNumero = Number(ano);
     const idCliente = Number(id_cliente);
 
-    if (!placa || !marca || !modelo || !ano || !id_cliente) {
+    if (!placa || !modelo || !ano || !cor || !id_cliente) {
       return res.status(400).json({
-        message: "placa, marca, modelo, ano e id_cliente são obrigatórios"
+        message: "placa, modelo, ano, cor e id_cliente são obrigatórios"
       });
     }
 
@@ -79,9 +91,15 @@ router.post("/", async (req, res) => {
 
     const veiculo = await Veiculo.create({
       placa,
-      marca,
       modelo,
       ano: anoNumero,
+      cor,
+      quilometragem: quilometragem ?? 0,
+      tipoVeiculo,
+      motorizacao,
+      numeroChasse,
+      tipoCombustivel,
+      dataUltimaRevisao,
       id_cliente: idCliente
     });
 
@@ -140,7 +158,19 @@ router.put("/:id", async (req, res) => {
       });
     }
 
-    const { placa, marca, modelo, ano, id_cliente } = req.body;
+    const {
+      placa,
+      modelo,
+      ano,
+      cor,
+      quilometragem,
+      tipoVeiculo,
+      motorizacao,
+      numeroChasse,
+      tipoCombustivel,
+      dataUltimaRevisao,
+      id_cliente
+    } = req.body;
 
     let anoNumero = veiculo.ano;
     let idCliente = veiculo.id_cliente;
@@ -175,9 +205,15 @@ router.put("/:id", async (req, res) => {
 
     const veiculoAtualizado = await veiculo.update({
       placa: placa ?? veiculo.placa,
-      marca: marca ?? veiculo.marca,
       modelo: modelo ?? veiculo.modelo,
       ano: anoNumero,
+      cor: cor ?? veiculo.cor,
+      quilometragem: quilometragem ?? veiculo.quilometragem,
+      tipoVeiculo: tipoVeiculo ?? veiculo.tipoVeiculo,
+      motorizacao: motorizacao ?? veiculo.motorizacao,
+      numeroChasse: numeroChasse ?? veiculo.numeroChasse,
+      tipoCombustivel: tipoCombustivel ?? veiculo.tipoCombustivel,
+      dataUltimaRevisao: dataUltimaRevisao ?? veiculo.dataUltimaRevisao,
       id_cliente: idCliente
     });
 
