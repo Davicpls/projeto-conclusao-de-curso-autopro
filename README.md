@@ -1,389 +1,409 @@
 # AutoPro
 
-Projeto monorepo com:
+Sistema web para gerenciamento de oficina automotiva.
 
-* **Backend:** Node.js + Express
-* **Frontend:** React + Vite
-* **Ambiente:** Docker + Docker Compose
+O projeto esta organizado como um monorepo com backend, frontend e banco PostgreSQL rodando via Docker Compose.
 
----
+## Tecnologias
 
-# Estrutura do projeto
+- Backend: Node.js, Express, Sequelize, PostgreSQL
+- Frontend: React, Vite, TypeScript, React Router DOM, Axios
+- Documentacao da API: Swagger UI
+- Ambiente: Docker e Docker Compose
+
+## Estrutura
 
 ```text
 pcc/
-├── backend/
-│   ├── Dockerfile
-│   ├── .dockerignore
-│   ├── package.json
-│   └── index.js
-│
-├── frontend/
-│   ├── Dockerfile
-│   ├── .dockerignore
-│   ├── package.json
-│   ├── src/
-│   └── index.html
-│
-└── docker-compose.yml
+|-- backend/
+|   |-- database/
+|   |   `-- connection.js
+|   |-- models/
+|   |   |-- Cliente.js
+|   |   |-- ItemServico.js
+|   |   |-- Produto.js
+|   |   |-- Servico.js
+|   |   |-- Usuario.js
+|   |   |-- Veiculo.js
+|   |   `-- index.js
+|   |-- routes/
+|   |   |-- clientes.js
+|   |   |-- itensServico.js
+|   |   |-- produtos.js
+|   |   |-- servicos.js
+|   |   |-- usuarios.js
+|   |   `-- veiculos.js
+|   |-- utils/
+|   |-- index.js
+|   `-- swagger.json
+|-- frontend/
+|   |-- client/
+|   |   `-- src/
+|   |       |-- api/
+|   |       |-- components/
+|   |       |-- pages/
+|   |       `-- App.tsx
+|   |-- server/
+|   `-- package.json
+`-- docker-compose.yml
 ```
 
----
+## Pre-requisitos
 
-# Pré-requisitos
+- Docker Desktop instalado e rodando
+- Git, se for clonar/versionar o projeto
+- VS Code, opcional
 
-Instalar:
+## Como rodar
 
-## 1. Docker Desktop
-
-Baixar e instalar:
-
-[https://www.docker.com/products/docker-desktop/](https://www.docker.com/products/docker-desktop/)
-
-Durante a instalação:
-
-* manter **WSL 2 based engine** habilitado
-
-Após instalar:
-
-* abrir o Docker Desktop
-* esperar aparecer:
-
-```text
-Docker Desktop is running
-```
-
----
-
-## 2. VSCode (opcional, recomendado)
-
-[https://code.visualstudio.com/](https://code.visualstudio.com/)
-
----
-
-# Clonar ou abrir o projeto
+Na raiz do projeto:
 
 ```powershell
-cd C:\Users\SEU_USUARIO\Desktop
-```
-
-Se ainda não existir:
-
-```powershell
-mkdir pcc
-cd pcc
-```
-
-Abrir no VSCode:
-
-```powershell
-code .
-```
-
-Importante:
-
-Abrir somente a pasta do projeto:
-
-```text
-Desktop/pcc
-```
-
-Nunca abrir o Desktop inteiro.
-
----
-
-# Backend
-
-## Criar pasta
-
-```powershell
-mkdir backend
-cd backend
-```
-
----
-
-## Inicializar package.json
-
-```powershell
-docker run --rm -it -v ${PWD}:/app -w /app node:25.9.0 npm init -y
-```
-
----
-
-## Instalar dependências
-
-```powershell
-docker run --rm -it -v ${PWD}:/app -w /app node:25.9.0 npm install express cors dotenv
-```
-
----
-
-## Instalar nodemon
-
-```powershell
-docker run --rm -it -v ${PWD}:/app -w /app node:25.9.0 npm install -D nodemon
-```
-
----
-
-## Criar index.js
-
-```js
-const express = require("express");
-const cors = require("cors");
-require("dotenv").config();
-
-const app = express();
-
-app.use(cors());
-app.use(express.json());
-
-app.get("/", (req, res) => {
-  res.json({ message: "API AutoPro rodando" });
-});
-
-app.get("/produtos", (req, res) => {
-  res.json([]);
-});
-
-const PORT = process.env.PORT || 3001;
-
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});
-```
-
----
-
-## Ajustar package.json
-
-Adicionar:
-
-```json
-"scripts": {
-  "dev": "nodemon index.js",
-  "start": "node index.js"
-}
-```
-
----
-
-## Criar backend/.dockerignore
-
-```text
-node_modules
-npm-debug.log
-Dockerfile
-.dockerignore
-```
-
----
-
-## Criar backend/Dockerfile
-
-```dockerfile
-FROM node:25.9.0
-
-WORKDIR /app
-
-COPY package*.json ./
-
-RUN npm install
-
-COPY . .
-
-EXPOSE 3001
-
-CMD ["npm", "run", "dev"]
-```
-
----
-
-# Frontend
-
-## Voltar para raiz
-
-```powershell
-cd ..
-mkdir frontend
-cd frontend
-```
-
----
-
-## Criar projeto React + Vite
-
-```powershell
-docker run --rm -it -v ${PWD}:/app -w /app node:25.9.0 npm create vite@latest . -- --template react
-```
-
-Isso irá criar:
-
-* package.json
-* src/
-* index.html
-* vite.config.js
-
----
-
-## Criar frontend/.dockerignore
-
-```text
-node_modules
-npm-debug.log
-Dockerfile
-.dockerignore
-dist
-```
-
----
-
-## Criar frontend/Dockerfile
-
-```dockerfile
-FROM node:25.9.0
-
-WORKDIR /app
-
-COPY package*.json ./
-
-RUN npm install
-
-COPY . .
-
-EXPOSE 5173
-
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
-```
-
----
-
-# docker-compose.yml
-
-Criar na raiz do projeto:
-
-```yaml
-version: "3.9"
-
-services:
-  backend:
-    build: ./backend
-    container_name: pcc_backend
-    ports:
-      - "3001:3001"
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-    command: npm run dev
-
-  frontend:
-    build: ./frontend
-    container_name: pcc_frontend
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    depends_on:
-      - backend
-    command: npm run dev -- --host
-```
-
----
-
-# Rodar o projeto
-
-Na raiz:
-
-```powershell
-cd C:\Users\SEU_USUARIO\Desktop\pcc
-
 docker compose up --build
 ```
 
-Frontend:
+Depois acesse:
 
 ```text
-http://localhost:5173
+Frontend: http://localhost:5173
+Backend:  http://localhost:3001
+Swagger:  http://localhost:3001/api-docs
+OpenAPI:  http://localhost:3001/swagger.json
 ```
 
-Backend:
-
-```text
-http://localhost:3001
-```
-
-Swagger:
-
-```text
-http://localhost:3001/api-docs
-```
-
-Arquivo OpenAPI em JSON:
-
-```text
-http://localhost:3001/swagger.json
-```
-
----
-
-# Parar containers
+Para parar:
 
 ```powershell
 docker compose down
 ```
 
----
+Para parar e apagar o volume do banco:
 
-# Problemas comuns
+```powershell
+docker compose down -v
+```
 
-## Erro: package.json não encontrado
+## Banco de dados
 
-Significa que o frontend ainda não foi criado.
+O PostgreSQL roda no container `pcc_db`.
 
-Rodar novamente:
+Credenciais padrao do Docker Compose:
+
+```text
+Host pelo backend no Docker: db
+Host pelo computador/pgAdmin: localhost
+Porta pelo computador/pgAdmin: 5433
+Porta interna do container: 5432
+Database: PCC_AUTO
+Usuario: postgres
+Senha: 1234
+```
+
+No pgAdmin, use:
+
+```text
+Host: localhost
+Port: 5433
+Maintenance database: PCC_AUTO
+Username: postgres
+Password: 1234
+```
+
+O backend usa Sequelize e executa `sequelize.sync()` ao iniciar.
+
+## Variaveis de ambiente
+
+Arquivo principal:
+
+```text
+backend/.env
+```
+
+Exemplo:
+
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=PCC_AUTO
+DB_USER=postgres
+DB_PASSWORD=1234
+JWT_SECRET=troque-este-segredo-em-producao
+JWT_EXPIRES_IN_SECONDS=86400
+```
+
+No Docker Compose, o `DB_HOST` e sobrescrito para `db`, que e o nome do servico PostgreSQL dentro da rede Docker.
+
+## Backend
+
+Scripts:
+
+```powershell
+cd backend
+npm run dev
+npm start
+```
+
+Principais rotas:
+
+```text
+GET    /
+GET    /swagger.json
+
+GET    /clientes
+POST   /clientes
+GET    /clientes/:id
+PUT    /clientes/:id
+DELETE /clientes/:id
+
+GET    /veiculos
+POST   /veiculos
+GET    /veiculos/:id
+PUT    /veiculos/:id
+DELETE /veiculos/:id
+
+GET    /servicos
+POST   /servicos
+GET    /servicos/:id
+PUT    /servicos/:id
+DELETE /servicos/:id
+
+GET    /itens-servico
+POST   /itens-servico
+GET    /itens-servico/:id
+PUT    /itens-servico/:id
+DELETE /itens-servico/:id
+
+GET    /produtos
+POST   /produtos
+GET    /produtos/:id
+PUT    /produtos/:id
+DELETE /produtos/:id
+
+POST   /usuarios/login
+GET    /usuarios
+POST   /usuarios
+GET    /usuarios/:id
+PUT    /usuarios/:id
+DELETE /usuarios/:id
+```
+
+## Login
+
+Login:
+
+```http
+POST /usuarios/login
+```
+
+Body:
+
+```json
+{
+  "email": "admin@email.com",
+  "senha": "123456"
+}
+```
+
+Resposta:
+
+```json
+{
+  "token": "jwt",
+  "usuario": {
+    "id": "uuid",
+    "nome": "Admin",
+    "email": "admin@email.com",
+    "perfil": "Administrador",
+    "status": "Ativo",
+    "dataCriacao": "2026-05-03T00:00:00.000Z",
+    "dataAtualizacao": "2026-05-03T00:00:00.000Z"
+  }
+}
+```
+
+O frontend salva:
+
+```text
+localStorage.authToken
+localStorage.authUser
+```
+
+O Axios envia o token automaticamente no header:
+
+```text
+Authorization: Bearer <token>
+```
+
+## Criar primeiro usuario
+
+Como o login depende de usuario cadastrado, crie um usuario pelo Swagger em:
+
+```text
+http://localhost:3001/api-docs
+```
+
+Use a rota:
+
+```text
+POST /usuarios
+```
+
+Exemplo:
+
+```json
+{
+  "nome": "Administrador",
+  "email": "admin@email.com",
+  "perfil": "Administrador",
+  "status": "Ativo",
+  "senha": "123456"
+}
+```
+
+Depois entre no frontend com esse email e senha.
+
+## Frontend
+
+Scripts:
 
 ```powershell
 cd frontend
-
-docker run --rm -it -v ${PWD}:/app -w /app node:25.9.0 npm create vite@latest . -- --template react
+pnpm dev
+pnpm check
+pnpm build
 ```
 
----
+Rotas principais:
 
-## Erro: archive/tar unknown file mode
+```text
+/login
+/
+/pessoas
+/pessoas/:id/editar
+/veiculos
+/veiculos/:id/editar
+/os
+/os/:id/editar
+/produtos
+/produtos/:id/editar
+/usuarios
+/tabelas
+/fornecedores
+/configuracoes
+/relatorios
+```
 
-Normalmente causado por node_modules no Windows.
+O roteamento usa `react-router-dom`.
 
-Apagar:
+## Permissoes de usuario
+
+Na tela de usuarios:
+
+- `Administrador` pode criar, editar, habilitar/desabilitar e resetar senha.
+- `Supervisor` e `Padrao` visualizam a lista sem acoes de modificacao.
+
+## Desenvolvimento com Docker
+
+O Compose usa volumes:
+
+```yaml
+./backend:/app
+./frontend:/app
+```
+
+Por isso, alteracoes nos arquivos sao refletidas automaticamente nos containers.
+
+O backend usa `nodemon`.
+
+O frontend usa Vite.
+
+## Comandos uteis
+
+Ver logs:
 
 ```powershell
-Remove-Item -Recurse -Force .\backend\node_modules
-Remove-Item -Recurse -Force .\frontend\node_modules
+docker compose logs -f backend
+docker compose logs -f frontend
+docker compose logs -f db
 ```
 
-E rodar novamente.
-
----
-
-## Erro: dockerDesktopLinuxEngine
-
-Docker Desktop não está rodando.
-
-Abrir o Docker Desktop e aguardar inicialização completa.
-
----
-
-# Git
-
-Inicializar Git somente dentro da pasta do projeto:
+Entrar no backend:
 
 ```powershell
-cd C:\Users\SEU_USUARIO\Desktop\pcc
-git init
+docker compose exec backend sh
 ```
 
-Nunca iniciar Git no Desktop inteiro.
+Entrar no frontend:
 
----
+```powershell
+docker compose exec frontend sh
+```
+
+Rodar typecheck do frontend:
+
+```powershell
+docker compose exec frontend pnpm check
+```
+
+Testar API:
+
+```powershell
+Invoke-WebRequest -UseBasicParsing http://localhost:3001/
+Invoke-WebRequest -UseBasicParsing http://localhost:3001/usuarios
+```
+
+## Problemas comuns
+
+### Frontend nao abre em http://localhost:5173
+
+Confira se o container esta rodando:
+
+```powershell
+docker compose ps
+docker compose logs -f frontend
+```
+
+### Backend nao conecta no banco
+
+Dentro do Docker, o backend deve usar:
+
+```text
+DB_HOST=db
+```
+
+Esse valor ja esta configurado no `docker-compose.yml`.
+
+Pelo pgAdmin no computador, use:
+
+```text
+Host: localhost
+Port: 5433
+```
+
+### Dados aparecem no pgAdmin mas nao na API
+
+Verifique se voce esta olhando o mesmo banco e porta:
+
+```text
+Container PostgreSQL: pcc_db
+Banco: PCC_AUTO
+Porta host: 5433
+```
+
+### Alterei arquivos e nao atualizou
+
+Normalmente o volume atualiza automaticamente. Se travar:
+
+```powershell
+docker compose restart backend
+docker compose restart frontend
+```
+
+### Resetar banco local
+
+Isso apaga todos os dados:
+
+```powershell
+docker compose down -v
+docker compose up --build
+```
