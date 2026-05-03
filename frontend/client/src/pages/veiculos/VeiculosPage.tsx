@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -10,12 +11,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { toast } from 'sonner';
 import DataTable from '@/components/DataTable';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import VeiculoForm from '@/components/forms/VeiculoForm';
 import { VeiculoApi, ClienteApi, veiculosApi, clientesApi } from '@/api';
 
 export default function Veiculos() {
+  const navigate = useNavigate();
   const [veiculos, setVeiculos] = useState<VeiculoApi[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [clientes, setClientes] = useState<ClienteApi[]>([]);
@@ -32,8 +35,9 @@ export default function Veiculos() {
         console.log('veiculosResponse:', veiculosResponse);
         setClientes(clientesResponse);
         setVeiculos(veiculosResponse);
-      } catch (error) {
-        console.error('Erro ao carregar dados:', error);
+      } catch (error: any) {
+        const message = error.response?.data?.messsage || 'Erro ao carregar';
+        toast.error(message);
       } finally {
         setLoading(false);
       }
@@ -62,14 +66,15 @@ export default function Veiculos() {
       setVeiculos((prevVeiculos) => [...prevVeiculos, veiculoCriado]);
 
       setIsDialogOpen(false);
-    } catch (error) {
-      console.error("Erro ao adicionar veículo:", error);
+      toast.success('Veículo adicionado com sucesso');
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Erro ao cadastrar usuário';
+      toast.error(message)
     }
   };
 
   const handleEditVeiculo = (veiculo: VeiculoApi) => {
-    const event = new CustomEvent('navigate', { detail: `/veiculos/${veiculo.id}/editar` });
-    window.dispatchEvent(event);
+    navigate(`/veiculos/${veiculo.id}/editar`);
   };
 
   const columns = [

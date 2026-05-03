@@ -66,6 +66,10 @@ export interface UsuarioApi {
   dataAtualizacao: string;
 }
 
+export type UsuarioPayload = Omit<UsuarioApi, "id" | "dataCriacao" | "dataAtualizacao"> & {
+  senha?: string;
+};
+
 export interface LoginPayload {
   email: string;
   senha: string;

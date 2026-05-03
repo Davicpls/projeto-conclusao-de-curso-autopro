@@ -9,23 +9,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { generateId } from '@/lib/utils';
-import type { Usuario } from '@/types';
+import type { UsuarioApi, UsuarioPayload } from '@/api';
 
 interface UsuarioFormProps {
-  onSubmit: (usuario: Usuario) => void;
+  onSubmit: (usuario: UsuarioPayload) => void;
   onCancel: () => void;
-  initialData?: Usuario;
+  initialData?: UsuarioApi;
 }
 
 interface FormDataState {
-  id: string;
   nome: string;
   email: string;
+  senha: string;
   perfil: 'Administrador' | 'Supervisor' | 'Padrão';
   status: 'Ativo' | 'Inativo';
-  dataCriacao: string;
-  dataAtualizacao: string;
 }
 
 export default function UsuarioForm({
@@ -33,40 +30,26 @@ export default function UsuarioForm({
   onCancel,
   initialData,
 }: UsuarioFormProps) {
-  const getInitialData = (): FormDataState => {
-    if (initialData) {
-      return {
-        ...initialData,
-      };
-    }
-    return {
-      id: generateId(),
-      nome: '',
-      email: '',
-      perfil: 'Padrão',
-      status: 'Ativo',
-      dataCriacao: new Date().toISOString().split('T')[0],
-      dataAtualizacao: new Date().toISOString().split('T')[0],
-    };
-  };
-
-  const [formData, setFormData] = useState<FormDataState>(getInitialData());
+  const [formData, setFormData] = useState<FormDataState>(() => ({
+    nome: initialData?.nome || '',
+    email: initialData?.email || '',
+    senha: '',
+    perfil: initialData?.perfil || 'Padrão',
+    status: initialData?.status || 'Ativo',
+  }));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const usuario: Usuario = {
-      id: formData.id,
+    onSubmit({
       nome: formData.nome,
       email: formData.email,
       perfil: formData.perfil,
       status: formData.status,
-      dataCriacao: formData.dataCriacao,
-      dataAtualizacao: new Date().toISOString().split('T')[0],
-    };
-    onSubmit(usuario);
+      senha: formData.senha || undefined,
+    });
   };
 
-  const handleInputChange = (field: keyof FormDataState, value: any) => {
+  const handleInputChange = (field: keyof FormDataState, value: FormDataState[keyof FormDataState]) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -75,11 +58,10 @@ export default function UsuarioForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Informações Básicas */}
       <div>
         <h3 className="font-semibold mb-4">Informações do Usuário</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="md:col-span-2">
+          <div className="md:col-span-1">
             <Label htmlFor="nome">Nome *</Label>
             <Input
               id="nome"
@@ -89,7 +71,7 @@ export default function UsuarioForm({
               required
             />
           </div>
-          <div className="md:col-span-2">
+          <div className="md:col-span-1">
             <Label htmlFor="email">E-mail *</Label>
             <Input
               id="email"
@@ -100,13 +82,24 @@ export default function UsuarioForm({
               required
             />
           </div>
-          <div>
+          <div className="md:col-span-1">
+            <Label htmlFor="senha">Senha *</Label>
+            <Input
+              id="senha"
+              type="password"
+              value={formData.senha}
+              onChange={(e) => handleInputChange('senha', e.target.value)}
+              placeholder="Senha com no mínimo 6 caracteres"
+              required={!initialData}
+            />
+          </div>
+          <div className="md:col-span-1">
             <Label htmlFor="perfil">Perfil *</Label>
             <Select
               value={formData.perfil}
-              onValueChange={(value: any) => handleInputChange('perfil', value)}
+              onValueChange={(value: FormDataState['perfil']) => handleInputChange('perfil', value)}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -120,9 +113,9 @@ export default function UsuarioForm({
             <Label htmlFor="status">Status *</Label>
             <Select
               value={formData.status}
-              onValueChange={(value: any) => handleInputChange('status', value)}
+              onValueChange={(value: FormDataState['status']) => handleInputChange('status', value)}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -134,7 +127,6 @@ export default function UsuarioForm({
         </div>
       </div>
 
-      {/* Buttons */}
       <div className="flex gap-3 justify-end pt-4 border-t border-border">
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancelar

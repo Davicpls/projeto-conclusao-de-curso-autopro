@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import EditarVeiculo from '@/components/forms/EditarVeiculo';
 import { clientesApi, veiculosApi, type VeiculoApi, type ClienteApi } from '@/api';
+import { toast } from 'sonner';
 
 export default function EditarVeiculoRoute({ id, onNavigate }: { id: string; onNavigate: (path: string) => void }) {
   const [veiculo, setVeiculo] = useState<VeiculoApi | null>(null);
@@ -17,8 +18,9 @@ export default function EditarVeiculoRoute({ id, onNavigate }: { id: string; onN
         ]);
         setVeiculo(veiculoResponse);
         setClientes(clientesResponse);
-      } catch (error) {
-        console.error('Erro ao carregar veiculo:', error);
+      } catch (error: any) {
+        const message = error.response?.data?.messsage || 'Erro ao carregar';
+        toast.error(message);
         onNavigate('/veiculos');
       } finally {
         setLoading(false);

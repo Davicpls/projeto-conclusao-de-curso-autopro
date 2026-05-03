@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { toast } from 'sonner';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { VeiculoApi, veiculosApi, ClienteApi } from '@/api';
 
@@ -41,8 +42,9 @@ export default function EditarVeiculo({ id, veiculo, clientes, onNavigate, onSav
       setLoading(true);
 
       await onSave(formData);
-    } catch (error) {
-      console.error('Erro ao salvar veículo:', error);
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Erro ao cadastrar usuário';
+      toast.error(message)
     } finally {
       setLoading(false);
     }
@@ -56,8 +58,9 @@ export default function EditarVeiculo({ id, veiculo, clientes, onNavigate, onSav
 
       await veiculosApi.remove(id);
       onNavigate('/veiculos');
-    } catch (error) {
-      console.error('Erro ao salvar veículo:', error);
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Erro ao cadastrar usuário';
+      toast.error(message)
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
+import {
+  BrowserRouter,
+  Navigate,
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -13,7 +23,7 @@ import Tabelas from '@/pages/Tabelas';
 import Fornecedores from '@/pages/Fornecedores';
 import Configuracoes from '@/pages/Configuracoes';
 import Relatorios from '@/pages/Relatorios';
-import Usuarios from '@/pages/Usuarios';
+import Usuarios from '@/pages/usuarios/UsuariosPage';
 import Login from '@/pages/Login';
 import EditarOS from '@/pages/EditarOS';
 import EditarPessoa from '@/pages/EditarPessoa';
@@ -23,196 +33,194 @@ import { mockOrdensSevico, mockPessoas, mockProdutos } from '@/lib/mockData';
 import type { User, OrdemServico, Pessoa, Produto } from '@/types';
 import type { UsuarioApi } from '@/api';
 
-
-function Router({
-  currentPath,
-  onNavigate,
-  user,
-  onLogout,
-}: {
-  currentPath: string;
-  onNavigate: (path: string) => void;
-  user: User;
-  onLogout: () => void;
-}) {
-  const renderPage = () => {
-    if (currentPath.startsWith('/os/') && currentPath.endsWith('/editar')) {
-      const osId = currentPath.split('/')[2];
-      const os = mockOrdensSevico.find((o) => o.id === osId);
-      if (os) {
-        return (
-          <EditarOS
-            os={os}
-            onSave={(osAtualizada: OrdemServico) => {
-              console.log('OS atualizada:', osAtualizada);
-              onNavigate('/os');
-            }}
-            onCancel={() => onNavigate('/os')}
-          />
-        );
-      }
-    }
-
-    if (currentPath.startsWith('/pessoas/') && currentPath.endsWith('/editar')) {
-      const pessoaId = currentPath.split('/')[2];
-      const pessoa = mockPessoas.find((p) => p.id === pessoaId);
-      if (pessoa) {
-        return (
-          <EditarPessoa
-            pessoa={pessoa}
-            onSave={(pessoaAtualizada: Pessoa) => {
-              console.log('Pessoa atualizada:', pessoaAtualizada);
-              onNavigate('/pessoas');
-            }}
-            onCancel={() => onNavigate('/pessoas')}
-          />
-        );
-      }
-    }
-
-    if (currentPath.startsWith('/produtos/') && currentPath.endsWith('/editar')) {
-      const produtoId = currentPath.split('/')[2];
-      const produto = mockProdutos.find((p) => p.id === produtoId);
-      if (produto) {
-        return (
-          <EditarProduto
-            produto={produto}
-            onSave={(produtoAtualizado: Produto) => {
-              console.log('Produto atualizado:', produtoAtualizado);
-              onNavigate('/produtos');
-            }}
-            onCancel={() => onNavigate('/produtos')}
-          />
-        );
-      }
-    }
-
-    if (currentPath.startsWith('/veiculos/') && currentPath.endsWith('/editar')) {
-      const veiculoId = currentPath.split('/')[2];
-      return <EditarVeiculoRoute id={veiculoId} onNavigate={onNavigate} />;
-    }
-
-    switch (currentPath) {
-      case '/':
-        return <Dashboard />;
-      case '/pessoas':
-        return <Pessoas />;
-      case '/veiculos':
-        return <Veiculos />;
-      case '/os':
-        return <OS />;
-      case '/produtos':
-        return <Produtos />;
-      case '/tabelas':
-        return <Tabelas />;
-      case '/fornecedores':
-        return <Fornecedores />;
-      case '/configuracoes':
-        return <Configuracoes />;
-      case '/relatorios':
-        return <Relatorios />;
-      case '/usuarios':
-        return <Usuarios />;
-      default:
-        return <Dashboard />;
-    }
+function usuarioToUser(usuario: UsuarioApi): User {
+  return {
+    id: usuario.id,
+    nome: usuario.nome,
+    email: usuario.email,
+    role: usuario.perfil === 'Administrador' ? 'admin' : 'user',
   };
+}
+
+function getStoredUser(): User | null {
+  const storedUser = localStorage.getItem('authUser');
+
+  if (!storedUser) {
+    return null;
+  }
+
+  try {
+    return usuarioToUser(JSON.parse(storedUser) as UsuarioApi);
+  } catch {
+    localStorage.removeItem('authUser');
+    localStorage.removeItem('authToken');
+    return null;
+  }
+}
+
+function AppLayout({ user, onLogout }: { user: User; onLogout: () => void }) {
+  const location = useLocation();
+  const navigate = useNavigate();
 
   return (
     <DashboardLayout
       user={user}
-      currentPath={currentPath}
-      onNavigate={onNavigate}
+      currentPath={location.pathname}
+      onNavigate={navigate}
       onLogout={onLogout}
     >
-      {renderPage()}
+      <Outlet />
     </DashboardLayout>
   );
 }
 
-function App() {
-  const [currentPath, setCurrentPath] = useState(window.location.pathname || '/');
-  const [user, setUser] = useState<User | null>(() => {
-    const storedUser = localStorage.getItem('authUser');
+function ProtectedLayout({ user, onLogout }: { user: User | null; onLogout: () => void }) {
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
-    if (!storedUser) {
-      return null;
-    }
+  return <AppLayout user={user} onLogout={onLogout} />;
+}
 
-    try {
-      const usuario = JSON.parse(storedUser) as UsuarioApi;
-      return {
-        id: usuario.id,
-        nome: usuario.nome,
-        email: usuario.email,
-        role: usuario.perfil === 'Administrador' ? 'admin' : 'user',
-      };
-    } catch {
-      localStorage.removeItem('authUser');
-      localStorage.removeItem('authToken');
-      return null;
-    }
-  });
+function LoginRoute({ user, onLogin }: { user: User | null; onLogin: (token: string, usuario: UsuarioApi) => void }) {
+  if (user) {
+    return <Navigate to="/" replace />;
+  }
 
-  const handleNavigate = useCallback((path: string) => {
-    if (window.location.pathname !== path) {
-      window.history.pushState({}, '', path);
-    }
-    setCurrentPath(path);
-  }, []);
+  return <Login onLogin={onLogin} />;
+}
 
-  useEffect(() => {
-    const handleCustomNavigate = (event: Event) => {
-      const customEvent = event as CustomEvent<string>;
-      handleNavigate(customEvent.detail);
-    };
-    const handlePopState = () => {
-      setCurrentPath(window.location.pathname || '/');
-    };
+function EditarOSRoute() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const os = mockOrdensSevico.find((item) => item.id === id);
 
-    window.addEventListener('navigate', handleCustomNavigate);
-    window.addEventListener('popstate', handlePopState);
+  if (!os) {
+    return <Navigate to="/os" replace />;
+  }
 
-    return () => {
-      window.removeEventListener('navigate', handleCustomNavigate);
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, [handleNavigate]);
+  return (
+    <EditarOS
+      os={os}
+      onSave={(osAtualizada: OrdemServico) => {
+        console.log('OS atualizada:', osAtualizada);
+        navigate('/os');
+      }}
+      onCancel={() => navigate('/os')}
+    />
+  );
+}
+
+function EditarPessoaRoute() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const pessoa = mockPessoas.find((item) => item.id === id);
+
+  if (!pessoa) {
+    return <Navigate to="/pessoas" replace />;
+  }
+
+  return (
+    <EditarPessoa
+      pessoa={pessoa}
+      onSave={(pessoaAtualizada: Pessoa) => {
+        console.log('Pessoa atualizada:', pessoaAtualizada);
+        navigate('/pessoas');
+      }}
+      onCancel={() => navigate('/pessoas')}
+    />
+  );
+}
+
+function EditarProdutoRoute() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const produto = mockProdutos.find((item) => item.id === id);
+
+  if (!produto) {
+    return <Navigate to="/produtos" replace />;
+  }
+
+  return (
+    <EditarProduto
+      produto={produto}
+      onSave={(produtoAtualizado: Produto) => {
+        console.log('Produto atualizado:', produtoAtualizado);
+        navigate('/produtos');
+      }}
+      onCancel={() => navigate('/produtos')}
+    />
+  );
+}
+
+function EditarVeiculoRouteWrapper() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  if (!id) {
+    return <Navigate to="/veiculos" replace />;
+  }
+
+  return <EditarVeiculoRoute id={id} onNavigate={navigate} />;
+}
+
+function AppRoutes() {
+  const navigate = useNavigate();
+  const [user, setUser] = useState<User | null>(() => getStoredUser());
 
   const handleLogin = (_token: string, usuario: UsuarioApi) => {
-    setUser({
-      id: usuario.id,
-      nome: usuario.nome,
-      email: usuario.email,
-      role: usuario.perfil === 'Administrador' ? 'admin' : 'user',
-    });
-    handleNavigate('/');
+    setUser(usuarioToUser(usuario));
+    navigate('/', { replace: true });
   };
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('authUser');
     setUser(null);
-    handleNavigate('/login');
+    navigate('/login', { replace: true });
   };
 
-  const isLoginPath = currentPath === '/login';
+  const handleUserUpdate = (usuarioAtualizado: UsuarioApi) => {
+    const userAtualizado = usuarioToUser(usuarioAtualizado);
 
+    localStorage.setItem('authUser', JSON.stringify(usuarioAtualizado));
+    setUser(userAtualizado);
+  }
+
+  return (
+    <Routes>
+      <Route path="/login" element={<LoginRoute user={user} onLogin={handleLogin} />} />
+
+      <Route element={<ProtectedLayout user={user} onLogout={handleLogout} />}>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/pessoas" element={<Pessoas />} />
+        <Route path="/pessoas/:id/editar" element={<EditarPessoaRoute />} />
+        <Route path="/veiculos" element={<Veiculos />} />
+        <Route path="/veiculos/:id/editar" element={<EditarVeiculoRouteWrapper />} />
+        <Route path="/os" element={<OS />} />
+        <Route path="/os/:id/editar" element={<EditarOSRoute />} />
+        <Route path="/produtos" element={<Produtos />} />
+        <Route path="/produtos/:id/editar" element={<EditarProdutoRoute />} />
+        <Route path="/tabelas" element={<Tabelas />} />
+        <Route path="/fornecedores" element={<Fornecedores />} />
+        <Route path="/configuracoes" element={<Configuracoes />} />
+        <Route path="/relatorios" element={<Relatorios />} />
+        <Route path="/usuarios" element={<Usuarios onUserUpdate={handleUserUpdate} />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+    </Routes>
+  );
+}
+
+function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster />
-          {user && !isLoginPath ? (
-            <Router
-              currentPath={currentPath}
-              onNavigate={handleNavigate}
-              user={user}
-              onLogout={handleLogout}
-            />
-          ) : (
-            <Login onLogin={handleLogin} />
-          )}
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

@@ -25,7 +25,6 @@ interface FormDataState {
   modelo: string;
   ano: number;
   cor: string;
-  dono: string;
   quilometragem: number;
   tipoVeiculo: string;
   motorizacao: string;
@@ -51,7 +50,6 @@ export default function VeiculoForm({
         modelo: initialData.modelo,
         ano: initialData.ano,
         cor: initialData.cor,
-        dono: '',
         quilometragem: initialData.quilometragem,
         tipoVeiculo: initialData.tipoVeiculo || '',
         motorizacao: initialData.motorizacao || '',
@@ -68,7 +66,6 @@ export default function VeiculoForm({
       modelo: '',
       ano: new Date().getFullYear(),
       cor: '',
-      dono: '',
       quilometragem: 0,
       tipoVeiculo: '',
       motorizacao: '',
@@ -149,15 +146,6 @@ export default function VeiculoForm({
               id="cor"
               value={formData.cor}
               onChange={(e) => handleInputChange('cor', e.target.value)}
-              required
-            />
-          </div>
-          <div className="md:col-span-2">
-            <Label htmlFor="dono">Dono *</Label>
-            <Input
-              id="dono"
-              value={formData.dono}
-              onChange={(e) => handleInputChange('dono', e.target.value)}
               required
             />
           </div>

@@ -32,7 +32,6 @@ export interface Veiculo {
   modelo: string;
   ano: number;
   cor: string;
-  dono: string;
   quilometragem: number;
   tipoVeiculo?: string;
   motorizacao?: string;

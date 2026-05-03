@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -18,6 +19,7 @@ import type { Produto } from '@/types';
 import ProdutoForm from '@/components/forms/ProdutoForm';
 
 export default function Produtos() {
+  const navigate = useNavigate();
   const [produtos, setProdutos] = useState<Produto[]>(mockProdutos);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -27,8 +29,7 @@ export default function Produtos() {
   };
 
   const handleEditProduto = (produto: Produto) => {
-    const event = new CustomEvent('navigate', { detail: `/produtos/${produto.id}/editar` });
-    window.dispatchEvent(event);
+    navigate(`/produtos/${produto.id}/editar`);
   };
 
   const columns = [

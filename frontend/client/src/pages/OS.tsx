@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plus, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -19,11 +20,8 @@ import { toast } from 'sonner';
 import type { OrdemServico } from '@/types';
 import OSForm from '@/components/forms/OSForm';
 
-interface RouteParams {
-  id?: string;
-}
-
 export default function OS() {
+  const navigate = useNavigate();
   const [ordens, setOrdens] = useState<OrdemServico[]>(mockOrdensSevico);
   const [selectedOS, setSelectedOS] = useState<OrdemServico | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -37,8 +35,7 @@ export default function OS() {
 
   const handleEditOS = (os: OrdemServico) => {
     // Navegar para página de edição
-    const event = new CustomEvent('navigate', { detail: `/os/${os.id}/editar` });
-    window.dispatchEvent(event);
+    navigate(`/os/${os.id}/editar`);
   };
 
   const columns = [
@@ -85,8 +82,7 @@ export default function OS() {
     );
     toast.success('Ordem de Serviço atualizada com sucesso!');
     // Voltar para lista de OS
-    const event = new CustomEvent('navigate', { detail: '/os' });
-    window.dispatchEvent(event);
+    navigate('/os');
   };
 
   return (

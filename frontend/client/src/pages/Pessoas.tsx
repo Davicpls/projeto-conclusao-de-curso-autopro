@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -18,6 +19,7 @@ import type { Pessoa } from '@/types';
 import PessoaForm from '@/components/forms/PessoaForm';
 
 export default function Pessoas() {
+  const navigate = useNavigate();
   const [pessoas, setPessoas] = useState<Pessoa[]>(mockPessoas);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -27,8 +29,7 @@ export default function Pessoas() {
   };
 
   const handleEditPessoa = (pessoa: Pessoa) => {
-    const event = new CustomEvent('navigate', { detail: `/pessoas/${pessoa.id}/editar` });
-    window.dispatchEvent(event);
+    navigate(`/pessoas/${pessoa.id}/editar`);
   };
 
   const columns = [
