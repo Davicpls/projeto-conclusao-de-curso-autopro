@@ -1,17 +1,20 @@
 import { useState, useEffect } from 'react';
 import EditarVeiculo from '@/components/forms/EditarVeiculo';
-import { clientesApi, veiculosApi, type VeiculoApi, type ClienteApi} from '@/api';
+import { clientesApi, veiculosApi, type VeiculoApi, type ClienteApi } from '@/api';
 
 export default function EditarVeiculoRoute({ id, onNavigate }: { id: string; onNavigate: (path: string) => void }) {
   const [veiculo, setVeiculo] = useState<VeiculoApi | null>(null);
-  const [clientes, setClientes] = useState<ClienteApi| null>(null);
+  const [clientes, setClientes] = useState<ClienteApi[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadVeiculo = async () => {
       try {
         setLoading(true);
-        const [veiculoResponse, clientesResponse] = await Promise.all([veiculosApi.getById(id), clientesApi.getAll()])
+        const [veiculoResponse, clientesResponse] = await Promise.all([
+          veiculosApi.getById(id),
+          clientesApi.getAll(),
+        ]);
         setVeiculo(veiculoResponse);
         setClientes(clientesResponse);
       } catch (error) {

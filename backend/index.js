@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const { DataTypes } = require("sequelize");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
 require("dotenv").config();
@@ -10,6 +11,7 @@ const clientesRoutes = require("./routes/clientes");
 const itensServicoRoutes = require("./routes/itensServico");
 const produtosRoutes = require("./routes/produtos");
 const servicosRoutes = require("./routes/servicos");
+const usuariosRoutes = require("./routes/usuarios");
 const veiculosRoutes = require("./routes/veiculos");
 
 app.use(cors());
@@ -29,13 +31,40 @@ app.use("/veiculos", veiculosRoutes);
 app.use("/servicos", servicosRoutes);
 app.use("/itens-servico", itensServicoRoutes);
 app.use("/produtos", produtosRoutes);
+app.use("/usuarios", usuariosRoutes);
 
 const PORT = process.env.PORT || 3001;
+
+async function ensureUsuariosSchema() {
+  const queryInterface = sequelize.getQueryInterface();
+  const tables = await queryInterface.showAllTables();
+  const hasUsuariosTable = tables.some((table) => {
+    if (typeof table === "string") {
+      return table === "usuarios";
+    }
+
+    return table.tableName === "usuarios";
+  });
+
+  if (!hasUsuariosTable) {
+    return;
+  }
+
+  const columns = await queryInterface.describeTable("usuarios");
+
+  if (!columns.senha_hash) {
+    await queryInterface.addColumn("usuarios", "senha_hash", {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    });
+  }
+}
 
 async function startDB() {
   try {
     await sequelize.authenticate();
     await sequelize.sync();
+    await ensureUsuariosSchema();
     console.log("Conexao com PostgreSQL realizada com sucesso");
   } catch (err) {
     console.error("Erro ao conectar com PostgreSQL:", err);

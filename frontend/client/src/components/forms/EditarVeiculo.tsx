@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,13 +11,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import Breadcrumbs from '@/components/Breadcrumbs';
-import { toast } from 'sonner';
-import { VeiculoApi, veiculosApi, ClienteApi, clientesApi } from '@/api';
+import { VeiculoApi, veiculosApi, ClienteApi } from '@/api';
 
 interface EditarVeiculoProps {
   id: string;
   veiculo: VeiculoApi;
-  clientes: ClienteApi;
+  clientes: ClienteApi[];
   onNavigate: (path: string) => void;
   onSave: (veiculo: VeiculoApi) => void;
   onCancel: () => void;
@@ -25,7 +24,6 @@ interface EditarVeiculoProps {
 
 export default function EditarVeiculo({ id, veiculo, clientes, onNavigate, onSave, onCancel }: EditarVeiculoProps) {
   const [formData, setFormData] = useState<VeiculoApi>(veiculo);
-  const [clientesData, setClientesData] = useState<ClienteApi>(clientes);
   const [loading, setLoading] = useState(false);
 
 
@@ -56,7 +54,7 @@ export default function EditarVeiculo({ id, veiculo, clientes, onNavigate, onSav
     try {
       setLoading(true);
 
-      const deleteVeiculoResponse = await veiculosApi.remove(id);
+      await veiculosApi.remove(id);
       onNavigate('/veiculos');
     } catch (error) {
       console.error('Erro ao salvar veículo:', error);

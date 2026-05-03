@@ -31,13 +31,19 @@
     {
       "name": "Produtos",
       "description": "Operacoes relacionadas ao estoque de produtos"
+    },
+    {
+      "name": "Usuarios",
+      "description": "Operacoes relacionadas aos usuarios e autenticacao"
     }
   ],
   "paths": {
     "/": {
       "get": {
         "summary": "Verifica se a API esta rodando",
-        "tags": ["Status"],
+        "tags": [
+          "Status"
+        ],
         "responses": {
           "200": {
             "description": "API em execucao",
@@ -58,7 +64,9 @@
     "/clientes": {
       "get": {
         "summary": "Lista todos os clientes",
-        "tags": ["Clientes"],
+        "tags": [
+          "Clientes"
+        ],
         "responses": {
           "200": {
             "description": "Lista de clientes",
@@ -77,7 +85,9 @@
       },
       "post": {
         "summary": "Cria um cliente",
-        "tags": ["Clientes"],
+        "tags": [
+          "Clientes"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -113,7 +123,9 @@
     "/clientes/{id}": {
       "get": {
         "summary": "Busca um cliente por ID",
-        "tags": ["Clientes"],
+        "tags": [
+          "Clientes"
+        ],
         "parameters": [
           {
             "$ref": "#/components/parameters/Id"
@@ -137,7 +149,9 @@
       },
       "put": {
         "summary": "Atualiza um cliente",
-        "tags": ["Clientes"],
+        "tags": [
+          "Clientes"
+        ],
         "parameters": [
           {
             "$ref": "#/components/parameters/Id"
@@ -171,7 +185,9 @@
       },
       "delete": {
         "summary": "Remove um cliente",
-        "tags": ["Clientes"],
+        "tags": [
+          "Clientes"
+        ],
         "parameters": [
           {
             "$ref": "#/components/parameters/Id"
@@ -193,7 +209,9 @@
     "/veiculos": {
       "get": {
         "summary": "Lista todos os veiculos",
-        "tags": ["Veiculos"],
+        "tags": [
+          "Veiculos"
+        ],
         "responses": {
           "200": {
             "description": "Lista de veiculos",
@@ -212,7 +230,9 @@
       },
       "post": {
         "summary": "Cria um veiculo",
-        "tags": ["Veiculos"],
+        "tags": [
+          "Veiculos"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -222,9 +242,15 @@
               },
               "example": {
                 "placa": "ABC1D23",
-                "marca": "Toyota",
                 "modelo": "Corolla",
                 "ano": 2020,
+                "cor": "Prata",
+                "quilometragem": 45000,
+                "tipoVeiculo": "Sedan",
+                "motorizacao": "2.0 Flex",
+                "numeroChasse": "9BWZZZ377VT004251",
+                "tipoCombustivel": "Flex",
+                "dataUltimaRevisao": "2026-04-20",
                 "id_cliente": 1
               }
             }
@@ -253,7 +279,9 @@
     "/veiculos/{id}": {
       "get": {
         "summary": "Busca um veiculo por ID",
-        "tags": ["Veiculos"],
+        "tags": [
+          "Veiculos"
+        ],
         "parameters": [
           {
             "$ref": "#/components/parameters/Id"
@@ -277,7 +305,9 @@
       },
       "put": {
         "summary": "Atualiza um veiculo",
-        "tags": ["Veiculos"],
+        "tags": [
+          "Veiculos"
+        ],
         "parameters": [
           {
             "$ref": "#/components/parameters/Id"
@@ -311,7 +341,9 @@
       },
       "delete": {
         "summary": "Remove um veiculo",
-        "tags": ["Veiculos"],
+        "tags": [
+          "Veiculos"
+        ],
         "parameters": [
           {
             "$ref": "#/components/parameters/Id"
@@ -333,7 +365,9 @@
     "/servicos": {
       "get": {
         "summary": "Lista todos os servicos",
-        "tags": ["Servicos"],
+        "tags": [
+          "Servicos"
+        ],
         "responses": {
           "200": {
             "description": "Lista de servicos",
@@ -352,7 +386,9 @@
       },
       "post": {
         "summary": "Cria um servico",
-        "tags": ["Servicos"],
+        "tags": [
+          "Servicos"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -394,7 +430,9 @@
     "/servicos/{id}": {
       "get": {
         "summary": "Busca um servico por ID",
-        "tags": ["Servicos"],
+        "tags": [
+          "Servicos"
+        ],
         "parameters": [
           {
             "$ref": "#/components/parameters/Id"
@@ -418,7 +456,9 @@
       },
       "put": {
         "summary": "Atualiza um servico",
-        "tags": ["Servicos"],
+        "tags": [
+          "Servicos"
+        ],
         "parameters": [
           {
             "$ref": "#/components/parameters/Id"
@@ -452,7 +492,9 @@
       },
       "delete": {
         "summary": "Remove um servico",
-        "tags": ["Servicos"],
+        "tags": [
+          "Servicos"
+        ],
         "parameters": [
           {
             "$ref": "#/components/parameters/Id"
@@ -474,7 +516,9 @@
     "/itens-servico": {
       "get": {
         "summary": "Lista todos os itens de servico",
-        "tags": ["Itens de Servico"],
+        "tags": [
+          "Itens de Servico"
+        ],
         "responses": {
           "200": {
             "description": "Lista de itens de servico",
@@ -493,7 +537,9 @@
       },
       "post": {
         "summary": "Cria um item de servico",
-        "tags": ["Itens de Servico"],
+        "tags": [
+          "Itens de Servico"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -535,7 +581,9 @@
     "/itens-servico/{id}": {
       "get": {
         "summary": "Busca um item de servico por ID",
-        "tags": ["Itens de Servico"],
+        "tags": [
+          "Itens de Servico"
+        ],
         "parameters": [
           {
             "$ref": "#/components/parameters/Id"
@@ -559,7 +607,9 @@
       },
       "put": {
         "summary": "Atualiza um item de servico",
-        "tags": ["Itens de Servico"],
+        "tags": [
+          "Itens de Servico"
+        ],
         "parameters": [
           {
             "$ref": "#/components/parameters/Id"
@@ -593,7 +643,9 @@
       },
       "delete": {
         "summary": "Remove um item de servico",
-        "tags": ["Itens de Servico"],
+        "tags": [
+          "Itens de Servico"
+        ],
         "parameters": [
           {
             "$ref": "#/components/parameters/Id"
@@ -612,7 +664,9 @@
     "/produtos": {
       "get": {
         "summary": "Lista todos os produtos",
-        "tags": ["Produtos"],
+        "tags": [
+          "Produtos"
+        ],
         "responses": {
           "200": {
             "description": "Lista de produtos",
@@ -631,7 +685,9 @@
       },
       "post": {
         "summary": "Cria um produto",
-        "tags": ["Produtos"],
+        "tags": [
+          "Produtos"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -667,7 +723,9 @@
     "/produtos/{id}": {
       "get": {
         "summary": "Busca um produto por ID",
-        "tags": ["Produtos"],
+        "tags": [
+          "Produtos"
+        ],
         "parameters": [
           {
             "$ref": "#/components/parameters/Id"
@@ -691,7 +749,9 @@
       },
       "put": {
         "summary": "Atualiza um produto",
-        "tags": ["Produtos"],
+        "tags": [
+          "Produtos"
+        ],
         "parameters": [
           {
             "$ref": "#/components/parameters/Id"
@@ -725,7 +785,9 @@
       },
       "delete": {
         "summary": "Remove um produto",
-        "tags": ["Produtos"],
+        "tags": [
+          "Produtos"
+        ],
         "parameters": [
           {
             "$ref": "#/components/parameters/Id"
@@ -743,6 +805,216 @@
           }
         }
       }
+    },
+    "/usuarios/login": {
+      "post": {
+        "summary": "Realiza login de usuario",
+        "tags": [
+          "Usuarios"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginInput"
+              },
+              "example": {
+                "email": "admin@email.com",
+                "senha": "123456"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login realizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/usuarios": {
+      "get": {
+        "summary": "Lista todos os usuarios",
+        "tags": [
+          "Usuarios"
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de Usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Usuario"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cria um usuario",
+        "tags": [
+          "Usuarios"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UsuarioInput"
+              },
+              "example": {
+                "nome": "Joao Silva",
+                "email": "joao@email.com",
+                "perfil": "Administrador",
+                "status": "Ativo",
+                "senha": "123456"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuario criado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Usuario"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        }
+      }
+    },
+    "/usuarios/{id}": {
+      "get": {
+        "summary": "Busca um usuario por ID",
+        "tags": [
+          "Usuarios"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuario encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Usuario"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "put": {
+        "summary": "Atualiza um usuario",
+        "tags": [
+          "Usuarios"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Uuid"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UsuarioUpdateInput"
+              },
+              "example": {
+                "nome": "Joao Silva",
+                "email": "joao@email.com",
+                "perfil": "Supervisor",
+                "status": "Ativo",
+                "senha": "novaSenha123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuario atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Usuario"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove um usuario",
+        "tags": [
+          "Usuarios"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuario removido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiMessage"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -755,6 +1027,17 @@
         "schema": {
           "type": "integer",
           "example": 1
+        }
+      },
+      "Uuid": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "ID UUID do registro",
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "example": "81f72d36-c7f1-4504-9323-81fdd59be329"
         }
       }
     },
@@ -781,6 +1064,26 @@
       },
       "Conflict": {
         "description": "Operacao bloqueada por relacionamento ou regra de negocio",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiMessage"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Credenciais invalidas",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiMessage"
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Usuario sem permissao ou inativo",
         "content": {
           "application/json": {
             "schema": {
@@ -818,7 +1121,11 @@
       },
       "ClienteInput": {
         "type": "object",
-        "required": ["nome", "email", "telefone"],
+        "required": [
+          "nome",
+          "email",
+          "telefone"
+        ],
         "properties": {
           "nome": {
             "type": "string",
@@ -843,6 +1150,16 @@
               "id": {
                 "type": "integer",
                 "example": 1
+              },
+              "data_criacao": {
+                "type": "string",
+                "format": "date-time",
+                "example": "2026-05-03T14:23:20.266Z"
+              },
+              "data_atualizacao": {
+                "type": "string",
+                "format": "date-time",
+                "example": "2026-05-03T14:23:20.266Z"
               }
             }
           },
@@ -853,15 +1170,17 @@
       },
       "VeiculoInput": {
         "type": "object",
-        "required": ["placa", "marca", "modelo", "ano", "id_cliente"],
+        "required": [
+          "placa",
+          "modelo",
+          "ano",
+          "cor",
+          "id_cliente"
+        ],
         "properties": {
           "placa": {
             "type": "string",
             "example": "ABC1D23"
-          },
-          "marca": {
-            "type": "string",
-            "example": "Toyota"
           },
           "modelo": {
             "type": "string",
@@ -870,6 +1189,41 @@
           "ano": {
             "type": "integer",
             "example": 2020
+          },
+          "cor": {
+            "type": "string",
+            "example": "Prata"
+          },
+          "quilometragem": {
+            "type": "integer",
+            "example": 45000,
+            "default": 0
+          },
+          "tipoVeiculo": {
+            "type": "string",
+            "nullable": true,
+            "example": "Sedan"
+          },
+          "motorizacao": {
+            "type": "string",
+            "nullable": true,
+            "example": "2.0 Flex"
+          },
+          "numeroChasse": {
+            "type": "string",
+            "nullable": true,
+            "example": "9BWZZZ377VT004251"
+          },
+          "tipoCombustivel": {
+            "type": "string",
+            "nullable": true,
+            "example": "Flex"
+          },
+          "dataUltimaRevisao": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "example": "2026-04-20"
           },
           "id_cliente": {
             "type": "integer",
@@ -951,7 +1305,11 @@
       },
       "ItemServicoInput": {
         "type": "object",
-        "required": ["id_servico", "id_produto", "quantidade_utilizada"],
+        "required": [
+          "id_servico",
+          "id_produto",
+          "quantidade_utilizada"
+        ],
         "properties": {
           "id_servico": {
             "type": "integer",
@@ -986,7 +1344,11 @@
       },
       "ProdutoInput": {
         "type": "object",
-        "required": ["nome", "quantidade", "preco_unitario"],
+        "required": [
+          "nome",
+          "quantidade",
+          "preco_unitario"
+        ],
         "properties": {
           "nome": {
             "type": "string",
@@ -1001,6 +1363,164 @@
             "type": "number",
             "format": "float",
             "example": 65.5
+          }
+        }
+      },
+      "Usuario": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "81f72d36-c7f1-4504-9323-81fdd59be329"
+          },
+          "nome": {
+            "type": "string",
+            "example": "Joao Silva"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "joao@email.com"
+          },
+          "perfil": {
+            "type": "string",
+            "enum": [
+              "Administrador",
+              "Supervisor",
+              "Padr?o"
+            ],
+            "example": "Administrador"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "Ativo",
+              "Inativo"
+            ],
+            "example": "Ativo"
+          },
+          "dataCriacao": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-05-03T14:23:20.266Z"
+          },
+          "dataAtualizacao": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-05-03T14:23:20.266Z"
+          }
+        }
+      },
+      "UsuarioInput": {
+        "type": "object",
+        "required": [
+          "nome",
+          "email",
+          "perfil",
+          "status",
+          "senha"
+        ],
+        "properties": {
+          "nome": {
+            "type": "string",
+            "example": "Joao Silva"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "joao@email.com"
+          },
+          "perfil": {
+            "type": "string",
+            "enum": [
+              "Administrador",
+              "Supervisor",
+              "Padr?o"
+            ],
+            "example": "Administrador"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "Ativo",
+              "Inativo"
+            ],
+            "example": "Ativo"
+          },
+          "senha": {
+            "type": "string",
+            "format": "password",
+            "minLength": 6,
+            "example": "123456"
+          }
+        }
+      },
+      "UsuarioUpdateInput": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "example": "Joao Silva"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "joao@email.com"
+          },
+          "perfil": {
+            "type": "string",
+            "enum": [
+              "Administrador",
+              "Supervisor",
+              "Padr?o"
+            ],
+            "example": "Administrador"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "Ativo",
+              "Inativo"
+            ],
+            "example": "Ativo"
+          },
+          "senha": {
+            "type": "string",
+            "format": "password",
+            "minLength": 6,
+            "example": "123456"
+          }
+        }
+      },
+      "LoginInput": {
+        "type": "object",
+        "required": [
+          "email",
+          "senha"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "admin@email.com"
+          },
+          "senha": {
+            "type": "string",
+            "format": "password",
+            "example": "123456"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "usuario": {
+            "$ref": "#/components/schemas/Usuario"
           }
         }
       }

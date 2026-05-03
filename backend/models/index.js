@@ -2,6 +2,7 @@ const Cliente = require("./Cliente");
 const ItemServico = require("./ItemServico");
 const Produto = require("./Produto");
 const Servico = require("./Servico");
+const Usuario = require("./Usuario");
 const Veiculo = require("./Veiculo");
 const sequelize = require("../database/connection");
 
@@ -52,4 +53,5 @@ module.exports = {
   Servico,
   ItemServico,
   Produto,
+  Usuario,
 };

@@ -1,4 +1,5 @@
 export { default as api } from "./http";
+export { authApi } from "./auth";
 export { clientesApi } from "./clientes";
 export { itensServicoApi } from "./itensServico";
 export { produtosApi } from "./produtos";
@@ -9,10 +10,13 @@ export type {
   ClientePayload,
   ItemServicoApi,
   ItemServicoPayload,
+  LoginPayload,
+  LoginResponse,
   ProdutoApi,
   ProdutoPayload,
   ServicoApi,
   ServicoPayload,
   VeiculoApi,
   VeiculoPayload,
+  UsuarioApi,
 } from "./types";

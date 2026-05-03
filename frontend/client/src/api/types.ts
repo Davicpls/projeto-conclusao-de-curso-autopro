@@ -55,3 +55,23 @@ export interface ItemServicoApi {
 }
 
 export type ItemServicoPayload = Omit<ItemServicoApi, "id">;
+
+export interface UsuarioApi {
+  id: string;
+  nome: string;
+  email: string;
+  perfil: "Administrador" | "Supervisor" | "Padrão";
+  status: "Ativo" | "Inativo";
+  dataCriacao: string;
+  dataAtualizacao: string;
+}
+
+export interface LoginPayload {
+  email: string;
+  senha: string;
+}
+
+export interface LoginResponse {
+  token: string;
+  usuario: UsuarioApi;
+}

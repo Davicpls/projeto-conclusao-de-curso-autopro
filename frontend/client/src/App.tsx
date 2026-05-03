@@ -14,13 +14,14 @@ import Fornecedores from '@/pages/Fornecedores';
 import Configuracoes from '@/pages/Configuracoes';
 import Relatorios from '@/pages/Relatorios';
 import Usuarios from '@/pages/Usuarios';
+import Login from '@/pages/Login';
 import EditarOS from '@/pages/EditarOS';
 import EditarPessoa from '@/pages/EditarPessoa';
 import EditarProduto from '@/pages/EditarProduto';
 import EditarVeiculoRoute from '@/pages/veiculos/EditarVeiculoPage';
-import { mockUser, mockOrdensSevico, mockPessoas, mockProdutos } from '@/lib/mockData';
+import { mockOrdensSevico, mockPessoas, mockProdutos } from '@/lib/mockData';
 import type { User, OrdemServico, Pessoa, Produto } from '@/types';
-import { clientesApi, veiculosApi, type VeiculoApi, type ClienteApi} from '@/api';
+import type { UsuarioApi } from '@/api';
 
 
 function Router({
@@ -131,7 +132,27 @@ function Router({
 
 function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname || '/');
-  const [user] = useState<User>(mockUser);
+  const [user, setUser] = useState<User | null>(() => {
+    const storedUser = localStorage.getItem('authUser');
+
+    if (!storedUser) {
+      return null;
+    }
+
+    try {
+      const usuario = JSON.parse(storedUser) as UsuarioApi;
+      return {
+        id: usuario.id,
+        nome: usuario.nome,
+        email: usuario.email,
+        role: usuario.perfil === 'Administrador' ? 'admin' : 'user',
+      };
+    } catch {
+      localStorage.removeItem('authUser');
+      localStorage.removeItem('authToken');
+      return null;
+    }
+  });
 
   const handleNavigate = useCallback((path: string) => {
     if (window.location.pathname !== path) {
@@ -158,21 +179,40 @@ function App() {
     };
   }, [handleNavigate]);
 
-  const handleLogout = () => {
-    console.log('Logout realizado');
+  const handleLogin = (_token: string, usuario: UsuarioApi) => {
+    setUser({
+      id: usuario.id,
+      nome: usuario.nome,
+      email: usuario.email,
+      role: usuario.perfil === 'Administrador' ? 'admin' : 'user',
+    });
+    handleNavigate('/');
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('authUser');
+    setUser(null);
+    handleNavigate('/login');
+  };
+
+  const isLoginPath = currentPath === '/login';
 
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster />
-          <Router
-            currentPath={currentPath}
-            onNavigate={handleNavigate}
-            user={user}
-            onLogout={handleLogout}
-          />
+          {user && !isLoginPath ? (
+            <Router
+              currentPath={currentPath}
+              onNavigate={handleNavigate}
+              user={user}
+              onLogout={handleLogout}
+            />
+          ) : (
+            <Login onLogin={handleLogin} />
+          )}
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
