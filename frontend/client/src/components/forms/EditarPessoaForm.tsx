@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { toast } from 'sonner';
+import { clientesApi, type ClienteApi } from '@/api';
+import Breadcrumbs from '@/components/Breadcrumbs';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,56 +13,90 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import Breadcrumbs from '@/components/Breadcrumbs';
-import { toast } from 'sonner';
-import type { Pessoa } from '@/types';
 
-interface EditarPessoaProps {
-  pessoa: Pessoa;
-  onSave: (pessoa: Pessoa) => void;
+interface EditarPessoaFormProps {
+  id: string;
+  cliente: ClienteApi;
+  onNavigate: (path: string) => void;
+  onSave: (cliente: ClienteApi) => Promise<void>;
   onCancel: () => void;
 }
 
-export default function EditarPessoa({ pessoa, onSave, onCancel }: EditarPessoaProps) {
-  const [formData, setFormData] = useState<Pessoa>(pessoa);
+export default function EditarPessoaForm({
+  id,
+  cliente,
+  onNavigate,
+  onSave,
+  onCancel,
+}: EditarPessoaFormProps) {
+  const [formData, setFormData] = useState<ClienteApi>(() => ({
+    ...cliente,
+    observacao: cliente.observacao || '',
+    endereco: {
+      ...cliente.endereco,
+      complemento: cliente.endereco.complemento || '',
+    },
+  }));
+  const [loading, setLoading] = useState(false);
 
-  const handleInputChange = (field: string, value: any) => {
-    setFormData({
-      ...formData,
+  const handleInputChange = <K extends keyof ClienteApi>(field: K, value: ClienteApi[K]) => {
+    setFormData((prev) => ({
+      ...prev,
       [field]: value,
-    });
+    }));
   };
 
-  const handleEnderecoChange = (field: string, value: any) => {
-    setFormData({
-      ...formData,
+  const handleEnderecoChange = (field: keyof ClienteApi['endereco'], value: string) => {
+    setFormData((prev) => ({
+      ...prev,
       endereco: {
-        ...formData.endereco,
+        ...prev.endereco,
         [field]: value,
       },
-    });
+    }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
-    toast.success('Pessoa atualizada com sucesso!');
+
+    try {
+      setLoading(true);
+      await onSave(formData);
+      toast.success('Pessoa atualizada com sucesso!');
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Erro ao atualizar pessoa';
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      setLoading(true);
+      await clientesApi.remove(id);
+      toast.success('Pessoa deletada com sucesso!');
+      onNavigate('/pessoas');
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Erro ao deletar pessoa';
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="space-y-6">
-      {/* Breadcrumbs */}
       <Breadcrumbs items={[{ label: 'Dashboard' }, { label: 'Pessoas' }, { label: 'Editar' }]} />
 
-      {/* Header */}
       <div>
         <h1>Editar Pessoa</h1>
         <p className="text-muted-foreground mt-1">ID: {formData.id}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Informações Pessoais */}
         <Card className="p-6">
           <h3 className="font-semibold mb-4">Informações Pessoais</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -72,11 +109,12 @@ export default function EditarPessoa({ pessoa, onSave, onCancel }: EditarPessoaP
                 required
               />
             </div>
+
             <div>
-              <Label htmlFor="genero">Gênero</Label>
+              <Label htmlFor="genero">Gênero *</Label>
               <Select
                 value={formData.genero}
-                onValueChange={(value: any) => handleInputChange('genero', value)}
+                onValueChange={(value: ClienteApi['genero']) => handleInputChange('genero', value)}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -88,20 +126,23 @@ export default function EditarPessoa({ pessoa, onSave, onCancel }: EditarPessoaP
                 </SelectContent>
               </Select>
             </div>
+
             <div>
-              <Label htmlFor="dataNascimento">Data de Nascimento</Label>
+              <Label htmlFor="dataNascimento">Data de Nascimento *</Label>
               <Input
                 id="dataNascimento"
                 type="date"
                 value={formData.dataNascimento}
                 onChange={(e) => handleInputChange('dataNascimento', e.target.value)}
+                required
               />
             </div>
+
             <div>
               <Label htmlFor="tipo">Tipo *</Label>
               <Select
                 value={formData.tipo}
-                onValueChange={(value: any) => handleInputChange('tipo', value)}
+                onValueChange={(value: ClienteApi['tipo']) => handleInputChange('tipo', value)}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -112,10 +153,20 @@ export default function EditarPessoa({ pessoa, onSave, onCancel }: EditarPessoaP
                 </SelectContent>
               </Select>
             </div>
+
+            <div className="flex items-center gap-3 pt-6">
+              <Switch
+                id="isFornecedor"
+                checked={formData.isFornecedor}
+                onCheckedChange={(checked) => handleInputChange('isFornecedor', checked)}
+              />
+              <Label htmlFor="isFornecedor" className="mb-0 cursor-pointer">
+                Marcar como fornecedor
+              </Label>
+            </div>
           </div>
         </Card>
 
-        {/* Contato */}
         <Card className="p-6">
           <h3 className="font-semibold mb-4">Informações de Contato</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -141,7 +192,6 @@ export default function EditarPessoa({ pessoa, onSave, onCancel }: EditarPessoaP
           </div>
         </Card>
 
-        {/* Endereço */}
         <Card className="p-6">
           <h3 className="font-semibold mb-4">Endereço</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -194,7 +244,7 @@ export default function EditarPessoa({ pessoa, onSave, onCancel }: EditarPessoaP
               <Input
                 id="uf"
                 value={formData.endereco.uf}
-                onChange={(e) => handleEnderecoChange('uf', e.target.value)}
+                onChange={(e) => handleEnderecoChange('uf', e.target.value.toUpperCase())}
                 maxLength={2}
                 required
               />
@@ -220,7 +270,6 @@ export default function EditarPessoa({ pessoa, onSave, onCancel }: EditarPessoaP
           </div>
         </Card>
 
-        {/* Observações */}
         <Card className="p-6">
           <h3 className="font-semibold mb-4">Observações</h3>
           <div>
@@ -234,12 +283,16 @@ export default function EditarPessoa({ pessoa, onSave, onCancel }: EditarPessoaP
           </div>
         </Card>
 
-        {/* Buttons */}
         <div className="flex gap-3 justify-end pt-4 border-t border-border">
-          <Button type="button" variant="outline" onClick={onCancel}>
+          <Button type="button" variant="outline" onClick={onCancel} disabled={loading}>
             Cancelar
           </Button>
-          <Button type="submit">Salvar Alterações</Button>
+          <Button type="button" variant="destructive" onClick={handleDelete} disabled={loading}>
+            Excluir Pessoa
+          </Button>
+          <Button type="submit" disabled={loading}>
+            Salvar Alterações
+          </Button>
         </div>
       </form>
     </div>

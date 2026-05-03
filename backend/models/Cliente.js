@@ -9,8 +9,30 @@ const Cliente = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    nome: {
-      type: DataTypes.STRING(120),
+    nomeCompleto: {
+      type: DataTypes.STRING(160),
+      allowNull: false,
+      field: "nome_completo",
+    },
+    genero: {
+      type: DataTypes.ENUM("M", "F", "Outro"),
+      allowNull: false,
+    },
+    dataNascimento: {
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+      field: "data_nascimento",
+    },
+    tipo: {
+      type: DataTypes.ENUM("Física", "Jurídica"),
+      allowNull: false,
+    },
+    endereco: {
+      type: DataTypes.JSONB,
+      allowNull: false,
+    },
+    telefone: {
+      type: DataTypes.STRING(20),
       allowNull: false,
     },
     email: {
@@ -21,14 +43,22 @@ const Cliente = sequelize.define(
         isEmail: true,
       },
     },
-    telefone: {
-      type: DataTypes.STRING(20),
+    isFornecedor: {
+      type: DataTypes.BOOLEAN,
       allowNull: false,
+      defaultValue: false,
+      field: "is_fornecedor",
+    },
+    observacao: {
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
   },
   {
     tableName: "clientes",
-    timestamps: false,
+    timestamps: true,
+    createdAt: "dataCriacao",
+    updatedAt: "dataAtualizacao",
   },
 );
 

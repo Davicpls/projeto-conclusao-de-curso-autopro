@@ -23,7 +23,7 @@ interface EditarVeiculoProps {
   onCancel: () => void;
 }
 
-export default function EditarVeiculo({ id, veiculo, clientes, onNavigate, onSave, onCancel }: EditarVeiculoProps) {
+export default function EditarVeiculoForm({ id, veiculo, clientes, onNavigate, onSave, onCancel }: EditarVeiculoProps) {
   const [formData, setFormData] = useState<VeiculoApi>(veiculo);
   const [loading, setLoading] = useState(false);
 
@@ -132,7 +132,7 @@ export default function EditarVeiculo({ id, veiculo, clientes, onNavigate, onSav
                 <SelectContent>
                   {clientes.map((cliente) => (
                     <SelectItem key={cliente.id} value={String(cliente.id)}>
-                      {cliente.nome}
+                      {cliente.nomeCompleto}
                     </SelectItem>
                   ))}
                 </SelectContent>

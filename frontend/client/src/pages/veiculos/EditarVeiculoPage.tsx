@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react';
-import EditarVeiculo from '@/components/forms/EditarVeiculo';
+import EditarVeiculoForm from '@/components/forms/EditarVeiculoForm';
 import { clientesApi, veiculosApi, type VeiculoApi, type ClienteApi } from '@/api';
 import { toast } from 'sonner';
 
-export default function EditarVeiculoRoute({ id, onNavigate }: { id: string; onNavigate: (path: string) => void }) {
+interface EditarVeiculoProps {
+  id: string; 
+  onNavigate: (path: string) => void;
+}
+
+export default function EditarVeiculoPage({ id, onNavigate }: EditarVeiculoProps) {
   const [veiculo, setVeiculo] = useState<VeiculoApi | null>(null);
   const [clientes, setClientes] = useState<ClienteApi[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,7 +44,7 @@ export default function EditarVeiculoRoute({ id, onNavigate }: { id: string; onN
   }
 
   return (
-    <EditarVeiculo
+    <EditarVeiculoForm
       id={id}
       clientes={clientes}
       veiculo={veiculo}

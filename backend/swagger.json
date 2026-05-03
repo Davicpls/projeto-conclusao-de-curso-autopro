@@ -96,9 +96,23 @@
                 "$ref": "#/components/schemas/ClienteInput"
               },
               "example": {
-                "nome": "Maria Silva",
+                "nomeCompleto": "Maria Silva",
+                "genero": "F",
+                "dataNascimento": "1990-05-15",
+                "tipo": "F?sica",
+                "endereco": {
+                  "logradouro": "Rua Teste",
+                  "numero": "123",
+                  "bairro": "Centro",
+                  "cidade": "Sao Paulo",
+                  "uf": "SP",
+                  "pais": "Brasil",
+                  "cep": "01000-000"
+                },
+                "telefone": "(11) 99999-9999",
                 "email": "maria@email.com",
-                "telefone": "(11) 99999-9999"
+                "isFornecedor": false,
+                "observacao": "Cliente desde 2024"
               }
             }
           }
@@ -1111,6 +1125,16 @@
               "id": {
                 "type": "integer",
                 "example": 1
+              },
+              "dataCriacao": {
+                "type": "string",
+                "format": "date-time",
+                "example": "2026-05-03T21:03:42.226Z"
+              },
+              "dataAtualizacao": {
+                "type": "string",
+                "format": "date-time",
+                "example": "2026-05-03T21:03:42.226Z"
               }
             }
           },
@@ -1122,23 +1146,62 @@
       "ClienteInput": {
         "type": "object",
         "required": [
-          "nome",
+          "nomeCompleto",
+          "genero",
+          "dataNascimento",
+          "tipo",
+          "endereco",
+          "telefone",
           "email",
-          "telefone"
+          "isFornecedor"
         ],
         "properties": {
-          "nome": {
+          "nomeCompleto": {
             "type": "string",
             "example": "Maria Silva"
+          },
+          "genero": {
+            "type": "string",
+            "enum": [
+              "M",
+              "F",
+              "Outro"
+            ],
+            "example": "F"
+          },
+          "dataNascimento": {
+            "type": "string",
+            "format": "date",
+            "example": "1990-05-15"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "F?sica",
+              "Jur?dica"
+            ],
+            "example": "F?sica"
+          },
+          "endereco": {
+            "$ref": "#/components/schemas/Endereco"
+          },
+          "telefone": {
+            "type": "string",
+            "example": "(11) 99999-9999"
           },
           "email": {
             "type": "string",
             "format": "email",
             "example": "maria@email.com"
           },
-          "telefone": {
+          "isFornecedor": {
+            "type": "boolean",
+            "example": false
+          },
+          "observacao": {
             "type": "string",
-            "example": "(11) 99999-9999"
+            "nullable": true,
+            "example": "Cliente desde 2024"
           }
         }
       },
@@ -1521,6 +1584,53 @@
           },
           "usuario": {
             "$ref": "#/components/schemas/Usuario"
+          }
+        }
+      },
+      "Endereco": {
+        "type": "object",
+        "required": [
+          "logradouro",
+          "numero",
+          "bairro",
+          "cidade",
+          "uf",
+          "pais",
+          "cep"
+        ],
+        "properties": {
+          "logradouro": {
+            "type": "string",
+            "example": "Rua Teste"
+          },
+          "numero": {
+            "type": "string",
+            "example": "123"
+          },
+          "complemento": {
+            "type": "string",
+            "nullable": true,
+            "example": "Apto 12"
+          },
+          "bairro": {
+            "type": "string",
+            "example": "Centro"
+          },
+          "cidade": {
+            "type": "string",
+            "example": "Sao Paulo"
+          },
+          "uf": {
+            "type": "string",
+            "example": "SP"
+          },
+          "pais": {
+            "type": "string",
+            "example": "Brasil"
+          },
+          "cep": {
+            "type": "string",
+            "example": "01000-000"
           }
         }
       }

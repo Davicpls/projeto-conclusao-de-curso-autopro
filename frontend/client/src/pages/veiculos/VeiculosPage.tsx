@@ -32,7 +32,6 @@ export default function Veiculos() {
           clientesApi.getAll(),
           veiculosApi.getAll(),
         ]);
-        console.log('veiculosResponse:', veiculosResponse);
         setClientes(clientesResponse);
         setVeiculos(veiculosResponse);
       } catch (error: any) {

@@ -1,11 +1,28 @@
 export interface ClienteApi {
   id: number;
-  nome: string;
-  email: string;
+  nomeCompleto: string;
+  genero: "M" | "F" | "Outro";
+  dataNascimento: string;
+  tipo: "Física" | "Jurídica";
+  endereco: {
+    logradouro: string;
+    numero: string;
+    complemento?: string;
+    bairro: string;
+    cidade: string;
+    uf: string;
+    pais: string;
+    cep: string;
+  };
   telefone: string;
+  email: string;
+  isFornecedor: boolean;
+  observacao?: string | null;
+  dataCriacao?: string;
+  dataAtualizacao?: string;
 }
 
-export type ClientePayload = Omit<ClienteApi, "id">;
+export type ClientePayload = Omit<ClienteApi, "id" | "dataCriacao" | "dataAtualizacao">;
 
 export interface VeiculoApi {
   id: number;

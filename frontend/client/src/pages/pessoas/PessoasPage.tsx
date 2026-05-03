@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,22 +13,59 @@ import {
 } from '@/components/ui/dialog';
 import DataTable from '@/components/DataTable';
 import Breadcrumbs from '@/components/Breadcrumbs';
-import { mockPessoas } from '@/lib/mockData';
 import { formatDate } from '@/lib/utils';
 import type { Pessoa } from '@/types';
 import PessoaForm from '@/components/forms/PessoaForm';
+import { clientesApi, type ClienteApi, type ClientePayload } from '@/api';
+import { toast } from 'sonner';
 
 export default function Pessoas() {
   const navigate = useNavigate();
-  const [pessoas, setPessoas] = useState<Pessoa[]>(mockPessoas);
+  const [pessoas, setPessoas] = useState<ClienteApi[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleAddPessoa = (novaPessoa: Pessoa) => {
-    setPessoas([...pessoas, novaPessoa]);
-    setIsDialogOpen(false);
+  useEffect(() => {
+      const loadData = async () => {
+        try {
+          setLoading(true);
+          const clientesResponse = await clientesApi.getAll();
+          setPessoas(clientesResponse);
+        } catch (error: any) {
+          const message = error.response?.data?.messsage || 'Erro ao carregar';
+          toast.error(message);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      loadData();
+    }, []);
+
+  const handleAddPessoa = async (novaPessoa: Pessoa) => {
+    try {
+      const payload: ClientePayload = {
+        nomeCompleto: novaPessoa.nomeCompleto,
+        genero: novaPessoa.genero,
+        dataNascimento: novaPessoa.dataNascimento,
+        tipo: novaPessoa.tipo,
+        endereco: novaPessoa.endereco,
+        telefone: novaPessoa.telefone,
+        email: novaPessoa.email,
+        isFornecedor: novaPessoa.isFornecedor,
+        observacao: novaPessoa.observacao,
+      };
+      const clienteCriado = await clientesApi.create(payload);
+      setPessoas((pessoasAtuais) => [clienteCriado, ...pessoasAtuais]);
+      setIsDialogOpen(false);
+      toast.success('Pessoa cadastrada com sucesso!');
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Erro ao cadastrar pessoa';
+      toast.error(message);
+    }
   };
 
-  const handleEditPessoa = (pessoa: Pessoa) => {
+  const handleEditPessoa = (pessoa: ClienteApi) => {
     navigate(`/pessoas/${pessoa.id}/editar`);
   };
 
@@ -65,7 +102,7 @@ export default function Pessoas() {
     },
   ];
 
-  const handleRowClick = (row: Pessoa) => {
+  const handleRowClick = (row: ClienteApi) => {
     handleEditPessoa(row);
   };
 
@@ -101,7 +138,7 @@ export default function Pessoas() {
 
       {/* Table */}
       <Card className="p-6">
-        <DataTable<Pessoa>
+        <DataTable<ClienteApi>
           data={pessoas}
           columns={columns}
           searchFields={['nomeCompleto', 'email', 'telefone']}

@@ -15,7 +15,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import DashboardLayout from '@/components/DashboardLayout';
 import Dashboard from '@/pages/Dashboard';
-import Pessoas from '@/pages/Pessoas';
+import Pessoas from '@/pages/pessoas/PessoasPage';
 import Veiculos from '@/pages/veiculos/VeiculosPage';
 import OS from '@/pages/OS';
 import Produtos from '@/pages/Produtos';
@@ -26,9 +26,9 @@ import Relatorios from '@/pages/Relatorios';
 import Usuarios from '@/pages/usuarios/UsuariosPage';
 import Login from '@/pages/Login';
 import EditarOS from '@/pages/EditarOS';
-import EditarPessoa from '@/pages/EditarPessoa';
+import EditarPessoaPage from '@/pages/pessoas/EditarPessoaPage';
 import EditarProduto from '@/pages/EditarProduto';
-import EditarVeiculoRoute from '@/pages/veiculos/EditarVeiculoPage';
+import EditarVeiculoPage from '@/pages/veiculos/EditarVeiculoPage';
 import { mockOrdensSevico, mockPessoas, mockProdutos } from '@/lib/mockData';
 import type { User, OrdemServico, Pessoa, Produto } from '@/types';
 import type { UsuarioApi } from '@/api';
@@ -103,7 +103,6 @@ function EditarOSRoute() {
     <EditarOS
       os={os}
       onSave={(osAtualizada: OrdemServico) => {
-        console.log('OS atualizada:', osAtualizada);
         navigate('/os');
       }}
       onCancel={() => navigate('/os')}
@@ -114,21 +113,13 @@ function EditarOSRoute() {
 function EditarPessoaRoute() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const pessoa = mockPessoas.find((item) => item.id === id);
 
-  if (!pessoa) {
-    return <Navigate to="/pessoas" replace />;
+  if (!id) {
+    return <Navigate to="/veiculos" replace />;
   }
 
   return (
-    <EditarPessoa
-      pessoa={pessoa}
-      onSave={(pessoaAtualizada: Pessoa) => {
-        console.log('Pessoa atualizada:', pessoaAtualizada);
-        navigate('/pessoas');
-      }}
-      onCancel={() => navigate('/pessoas')}
-    />
+    <EditarPessoaPage id={id} onNavigate={navigate}/>
   );
 }
 
@@ -145,7 +136,6 @@ function EditarProdutoRoute() {
     <EditarProduto
       produto={produto}
       onSave={(produtoAtualizado: Produto) => {
-        console.log('Produto atualizado:', produtoAtualizado);
         navigate('/produtos');
       }}
       onCancel={() => navigate('/produtos')}
@@ -153,7 +143,7 @@ function EditarProdutoRoute() {
   );
 }
 
-function EditarVeiculoRouteWrapper() {
+function EditarVeiculoRoute() {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -161,7 +151,7 @@ function EditarVeiculoRouteWrapper() {
     return <Navigate to="/veiculos" replace />;
   }
 
-  return <EditarVeiculoRoute id={id} onNavigate={navigate} />;
+  return <EditarVeiculoPage id={id} onNavigate={navigate} />;
 }
 
 function AppRoutes() {
@@ -196,7 +186,7 @@ function AppRoutes() {
         <Route path="/pessoas" element={<Pessoas />} />
         <Route path="/pessoas/:id/editar" element={<EditarPessoaRoute />} />
         <Route path="/veiculos" element={<Veiculos />} />
-        <Route path="/veiculos/:id/editar" element={<EditarVeiculoRouteWrapper />} />
+        <Route path="/veiculos/:id/editar" element={<EditarVeiculoRoute />} />
         <Route path="/os" element={<OS />} />
         <Route path="/os/:id/editar" element={<EditarOSRoute />} />
         <Route path="/produtos" element={<Produtos />} />

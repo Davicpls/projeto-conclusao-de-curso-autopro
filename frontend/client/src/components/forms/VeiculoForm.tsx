@@ -247,7 +247,7 @@ export default function VeiculoForm({
                 <SelectContent>
                   {clientes.map((cliente) => (
                     <SelectItem key={cliente.id} value={String(cliente.id)}>
-                      {cliente.nome}
+                      {cliente.nomeCompleto}
                     </SelectItem>
                   ))}
                 </SelectContent>
